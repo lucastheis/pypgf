@@ -5,8 +5,8 @@ from string import rstrip
 
 class Settings(object):
 	tmp_dir = '/tmp/'
-	command = 'pdflatex -halt-on-error -interaction nonstopmode {0}'
-#	command = 'pdflatex -halt-on-error -interaction batchmode {0} > /dev/null'
+#	command = 'pdflatex -halt-on-error -interaction nonstopmode {0}'
+	command = 'pdflatex -halt-on-error -interaction batchmode {0} > /dev/null'
 	preamble = \
 		'\\usepackage[utf8]{inputenc}\n' + \
 		'\\usepackage{amsmath}\n' + \
@@ -177,6 +177,14 @@ class Axis(object):
 		self.ymin = kwargs.get('ymin', None)
 		self.ymax = kwargs.get('ymax', None)
 
+		# tick positions
+		self.xtick = kwargs.get('xtick', None)
+		self.ytick = kwargs.get('ytick', None)
+
+		# tick labels
+		self.xticklabels = kwargs.get('xticklabels', None)
+		self.yticklabels = kwargs.get('yticklabels', None)
+
 		# controls aspect ratio
 		self.equal = kwargs.get('equal', False)
 
@@ -227,6 +235,18 @@ class Axis(object):
 			options.append('axis equal=true')
 		if self.grid:
 			options.append('grid=major')
+		if self.xtick:
+			options.append('xtick={{{0}}}'.format(
+				','.join(str(t) for t in self.xtick)))
+		if self.ytick:
+			options.append('ytick={{{0}}}'.format(
+				','.join(str(t) for t in self.ytick)))
+		if self.xticklabels:
+			options.append('xticklabels={{{0}}}'.format(
+				','.join(str(t) for t in self.xticklabels)))
+		if self.yticklabels:
+			options.append('yticklabels={{{0}}}'.format(
+				','.join(str(t) for t in self.yticklabels)))
 
 		tex = '\\begin{axis}[\n' + indent(',\n'.join(options), 2) + '\n\t]\n'
 		for plot in self.plots:
@@ -243,9 +263,9 @@ class Plot(object):
 		self.axis = kwargs.get('axis', Axis.gca())
 		self.axis.plots.append(self)
 
+		# separate data from formatting information
 		self.format_string = ''.join([arg
 			for arg in args if isinstance(arg, str)])
-
 		values = [arg for arg in args if not isinstance(arg, str)]
 
 		if len(values) < 1:
@@ -260,13 +280,33 @@ class Plot(object):
 			self.xvalues = asarray(values[0]).flatten()
 			self.yvalues = asarray(values[1]).flatten()
 
+		# marker style
+		self.marker = kwargs.get('marker', 'no marks')
+		self.marker_size = kwargs.get('marker_size', 1)
+		self.marker_edge_color = kwargs.get('marker_edge_color', None)
+		self.marker_face_color = kwargs.get('marker_face_color', None)
+
+		# opacity
+		self.opacity = kwargs.get('opacity', None)
+		self.fill_opacity = kwargs.get('fill_opacity', None)
+
 
 
 	def render(self):
 		color = 'blue'
 		linestyle = 'solid'
-		marker = 'no marks'
-		marker_options = []
+		marker = 'mark={0}'.format(self.marker)
+		marker_options = ['scale={0}'.format(self.marker_size)]
+
+		if self.marker_edge_color:
+			marker_options.append('{0}'.format(self.marker_edge_color))
+		if self.marker_face_color:
+			marker_options.append('fill={0}'.format(self.marker_face_color))
+
+		if self.fill_opacity is not None:
+			marker_options.append('fill opacity={0}'.format(self.fill_opacity))
+		elif self.opacity is not None:
+			marker_options.append('fill opacity={0}'.format(self.opacity))
 
 		# determine color
 		if 'r' in self.format_string:
@@ -290,7 +330,8 @@ class Plot(object):
 		if '.' in self.format_string:
 			marker = 'mark=*'
 			marker_options.append('solid')
-			marker_options.append('fill={0}'.format(color))
+			if not self.marker_face_color:
+				marker_options.append('fill={0}'.format(color))
 		elif 'o' in self.format_string:
 			marker = 'mark=o'
 			marker_options.append('solid')
@@ -323,13 +364,15 @@ class Plot(object):
 		if marker_options:
 			marker += ', mark options={' + ', '.join(marker_options) + '}'
 
+		options = [color, linestyle, marker]
+		if self.opacity is not None:
+			options.append('opacity={0}'.format(self.opacity))
+
 		# produce LaTeX code
 		tex = '\\addplot+[{0}] coordinates {{\n'.format(
-			'{0}, {1}, {2}'.format(color, linestyle, marker))
-
+			', '.join(options))
 		for x, y in zip(self.xvalues, self.yvalues):
 			tex += '\t({0}, {1})\n'.format(x, y)
-
 		tex += '};\n'
 
 		return tex
@@ -393,6 +436,26 @@ def xlabel(xlabel):
 
 def ylabel(ylabel):
 	gca().ylabel = ylabel
+
+
+
+def xtick(xtick):
+	gca().xtick = xtick
+
+
+
+def ytick(ytick):
+	gca().ytick = ytick
+
+
+
+def xticklabels(xticklabels):
+	gca().xticklabels = xticklabels
+
+
+
+def yticklabels(yticklabels):
+	gca().yticklabels = yticklabels
 
 
 
