@@ -1,19 +1,17 @@
 from os import system
-from numpy import min, max, ndarray, asarray, asmatrix, arange
+from numpy import min, max, mean, ndarray, asarray, asmatrix, arange
 from numpy.random import randint
 from string import rstrip
 
 class Settings(object):
 	tmp_dir = '/tmp/'
-#	command = 'pdflatex -halt-on-error -interaction nonstopmode {0}'
-	command = 'pdflatex -halt-on-error -interaction batchmode {0} > /dev/null'
+	command = 'pdflatex -halt-on-error -interaction nonstopmode {0}'
+#	command = 'pdflatex -halt-on-error -interaction batchmode {0} > /dev/null'
 	preamble = \
 		'\\usepackage[utf8]{inputenc}\n' + \
 		'\\usepackage{amsmath}\n' + \
 		'\\usepackage{amssymb}\n' + \
-		'\\usepackage{pgfplots}\n' + \
-		'\n' + \
-		'\\thispagestyle{empty}\n'
+		'\\usepackage{pgfplots}\n'
 
 
 
@@ -81,6 +79,11 @@ class Figure(object):
 			if not height:
 				height = self.margin * 2. \
 					+ max([ax.top + ax.height for ax in self.axes])
+		else:
+			if not width:
+				width = self.margin * 2. + 1.
+			if not height:
+				height = self.margin * 2. + 1.
 
 		tex = \
 			'\\documentclass{article}\n' + \
@@ -93,17 +96,21 @@ class Figure(object):
 			'\tpaperheight={0}cm]{{geometry}}\n'.format(height) + \
 			'\n' + \
 			'\\begin{document}\n' + \
-			'\t\\begin{figure}\n' + \
-			'\t\t\\centering\n'
-
+			'\t\\thispagestyle{empty}\n' + \
+			'\n'
 		if self.axes:
-			tex += '\t\t\\begin{tikzpicture}\n'
+			tex += \
+				'\t\\begin{figure}\n' + \
+				'\t\t\\centering\n' + \
+				'\t\t\\begin{tikzpicture}\n'
 			for ax in self.axes:
 				tex += indent(ax.render(), 3)
-			tex += '\t\t\\end{tikzpicture}\n'
-
+			tex += \
+				'\t\t\\end{tikzpicture}\n' + \
+				'\t\\end{figure}\n'
+		else:
+			tex += '\t\\mbox{}\n'
 		tex += \
-			'\t\\end{figure}\n' + \
 			'\\end{document}'
 
 		return tex
@@ -164,6 +171,18 @@ class Axis(object):
 		self.xlabel = kwargs.get('xlabel', '')
 		self.ylabel = kwargs.get('ylabel', '')
 
+		# axis boundaries
+		self.xmin = kwargs.get('xmin', None)
+		self.xmax = kwargs.get('xmax', None)
+		self.ymin = kwargs.get('ymin', None)
+		self.ymax = kwargs.get('ymax', None)
+
+		# controls aspect ratio
+		self.equal = kwargs.get('equal', False)
+
+		# grid lines
+		self.grid = kwargs.get('grid', False)
+
 		# add axis to figure
 		if not self.figure:
 			self.figure = Figure.gcf()
@@ -182,26 +201,36 @@ class Axis(object):
 		"""
 
 		options = [
+			'at={{({0}, {1})}}'.format(self.left, self.top),
+			'scale only axis',
 			'width={0}cm'.format(self.width),
-			'height={0}cm'.format(self.height)
-		]
+			'height={0}cm'.format(self.height)]
 
-		if self.title:
-			options.append('title={{{0}}}'.format(self.title))
+		properties = [
+			'title',
+			'xmin',
+			'xmax',
+			'ymin',
+			'ymax',
+			'xlabel',
+			'ylabel']
+
+		for prop in properties:
+			if self.__dict__.get(prop, None) not in ['', None, False]:
+				options.append('{0}={{{1}}}'.format(prop, self.__dict__[prop]))
+
 		if self.xlabel:
-			options.append('xlabel={{{0}}}'.format(self.xlabel))
 			options.append('xlabel near ticks')
 		if self.ylabel:
-			options.append('ylabel={{{0}}}'.format(self.ylabel))
 			options.append('ylabel near ticks')
+		if self.equal:
+			options.append('axis equal=true')
+		if self.grid:
+			options.append('grid=major')
 
-		options = indent(',\n'.join(options), 2)
-
-		tex = '\\begin{axis}[\n' + options + '\n\t]\n'
-
+		tex = '\\begin{axis}[\n' + indent(',\n'.join(options), 2) + '\n\t]\n'
 		for plot in self.plots:
 			tex += indent(plot.render())
-
 		tex += '\\end{axis}\n'
 
 		return tex
@@ -331,9 +360,7 @@ def draw():
 
 
 def figure(idx=None):
-	fig = Figure(idx)
-	Axis(fig)
-	return fig
+	return Figure(idx)
 
 
 
@@ -366,6 +393,34 @@ def xlabel(xlabel):
 
 def ylabel(ylabel):
 	gca().ylabel = ylabel
+
+
+
+def axis(*args):
+	if len(args) < 1:
+		return gca()
+
+	if len(args) < 4:
+		if isinstance(args[0], str):
+			ax = gca()
+
+			if args[0] == 'equal':
+				gca().equal = True
+			if args[0] == 'square':
+				ax.width = ax.height = mean([gca().width, gca().height])
+
+		elif isinstance(args[0], list) or isinstance(args[0], ndarray):
+			gca().xmin, gca().xmax, gca().ymin, gca().ymax = args[0]
+
+
+
+def grid(value=None):
+	if value == 'off':
+		gca().grid = False
+	elif value == 'on':
+		gca().grid = True
+	else:
+		gca().grid = not gca().grid
 
 
 
