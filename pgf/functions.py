@@ -2,43 +2,121 @@ from axis import Axis
 from figure import Figure
 from settings import Settings
 from plot import Plot
-from numpy import asmatrix
+from numpy import asmatrix, inf, mean
 
 def gcf():
 	"""
-	Return currently active figure.
+	Returns currently active figure.
 	"""
 	return Figure.gcf()
 
 
 def gca():
 	"""
-	Return currently active axis.
+	Returns currently active axis.
 	"""
 
 	return Axis.gca()
 
 
 def draw():
+	"""
+	Draws the currently active figure.
+	"""
+
 	gcf().draw()
 
 
 def figure(idx=None):
+	"""
+	Creates a new figure or moves the focus to an existing figure.
+
+	@type  idx: integer
+	@param idx: a number identifying a figure
+
+	@rtype: Figure
+	@return: currently active figure
+	"""
+
 	return Figure(idx)
 
 
 def plot(*args, **kwargs):
-	values = [asmatrix(arg) for arg in args if not isinstance(arg, str)]
+	"""
+	Plot lines or markers.
+
+	B{Examples:}
+
+		>>> plot(y)           # plot y using values 1 to len(y) for x
+		>>> plot(x, y)        # plot x and y using default line style and color
+		>>> plot(x, y, 'r.')  # plot red markers at positions x and y
+	"""
+
+	# split formatting information from data points
 	format_string = ''.join([arg for arg in args if isinstance(arg, str)])
+	args = [asmatrix(arg) for arg in args if not isinstance(arg, str)]
+
+	# parse format string into keyword arguments
+	if 'color' not in kwargs:
+		if 'r' in format_string:
+			kwargs['color'] = 'red'
+		elif 'g' in format_string:
+			kwargs['color'] = 'green'
+		elif 'b' in format_string:
+			kwargs['color'] = 'blue'
+		elif 'c' in format_string:
+			kwargs['color'] = 'cyan'
+		elif 'm' in format_string:
+			kwargs['color'] = 'magenta'
+		elif 'y' in format_string:
+			kwargs['color'] = 'yellow'
+		elif 'k' in format_string:
+			kwargs['color'] = 'black'
+		elif 'w' in format_string:
+			kwargs['color'] = 'white'
+
+	if 'marker' not in kwargs:
+		if '.' in format_string:
+			kwargs['marker'] = '*'
+		elif 'o' in format_string:
+			kwargs['marker'] = 'o'
+		elif '+' in format_string:
+			kwargs['marker'] = '+'
+		elif '|' in format_string:
+			kwargs['marker'] = '|'
+		elif '*' in format_string:
+			kwargs['marker'] = 'asterisk'
+		elif 'x' in format_string:
+			kwargs['marker'] = 'x'
+		elif 'd' in format_string:
+			kwargs['marker'] = 'diamond'
+		elif '^' in format_string:
+			kwargs['marker'] = 'triangle'
+		elif 'p' in format_string:
+			kwargs['marker'] = 'pentagon'
+
+	if 'line_style' not in kwargs:
+		if '---' in format_string:
+			kwargs['line_style'] = 'densely dashed'
+		elif '--' in format_string:
+			kwargs['line_style'] = 'dashed'
+		elif '-' in format_string:
+			kwargs['line_style'] = 'solid'
+		elif ':' in format_string:
+			kwargs['line_style'] = 'densely dotted'
+
+	# hide markers if no line style
+	if 'marker' in kwargs and 'line_style' not in kwargs:
+		kwargs['line_style'] = 'only marks'
 
 	# if arguments contain multiple rows, create multiple plots
-	if (len(values) > 1) and (values[1].shape[0] > 1) and (values[0].shape[0] == 1):
-		return [plot(format_string, values[0], *[value[i] for value in values[1:]], **kwargs)
-			for i in range(len(values[0]))]
+	if (len(args) > 1) and (args[1].shape[0] > 1) and (args[0].shape[0] == 1):
+		return [plot(args[0], *[arg[i] for arg in args[1:]], **kwargs)
+			for i in range(len(args[0]))]
 
-	elif (len(values) > 0) and (values[0].shape[0] > 1):
-		return [plot(format_string, *[value[i] for value in values], **kwargs)
-			for i in range(len(values[0]))]
+	elif (len(args) > 0) and (args[0].shape[0] > 1):
+		return [plot(*[arg[i] for arg in args], **kwargs)
+			for i in range(len(args[0]))]
 
 	return Plot(*args, **kwargs)
 
@@ -80,9 +158,28 @@ def axis(*args):
 			ax = gca()
 
 			if args[0] == 'equal':
-				gca().equal = True
-			if args[0] == 'square':
+				ax.equal = True
+
+			elif args[0] == 'square':
 				ax.width = ax.height = mean([gca().width, gca().height])
+
+			elif args[0] == 'auto':
+				ax.xmin = ax.xmax = ax.ymin = ax.ymax = None
+
+			elif args[0] == 'tight':
+				if not ax.plots:
+					return
+
+				ax.xmin, ax.xmax = inf, -inf
+				ax.ymin, ax.ymax = inf, -inf
+
+				# find minimum and maximum of data points
+				for plot in ax.plots:
+					xmin, xmax, ymin, ymax = plot.limits()
+					ax.xmin = min([ax.xmin, xmin])
+					ax.xmax = max([ax.xmax, xmax])
+					ax.ymin = min([ax.ymin, ymin])
+					ax.ymax = max([ax.ymax, ymax])
 
 		elif isinstance(args[0], list) or isinstance(args[0], ndarray):
 			gca().xmin, gca().xmax, gca().ymin, gca().ymax = args[0]
@@ -95,3 +192,7 @@ def grid(value=None):
 		gca().grid = True
 	else:
 		gca().grid = not gca().grid
+
+
+def render():
+	return gcf().render()
