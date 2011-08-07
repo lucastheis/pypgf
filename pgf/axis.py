@@ -2,16 +2,82 @@ from utils import indent
 from figure import Figure
 
 class Axis(object):
+	"""
+	Manages axis properties.
+
+	@type top: float
+	@ivar top: axis position
+
+	@type left: float
+	@ivar left: axis position
+
+	@type width: float
+	@ivar width: axis width
+
+	@type height: float
+	@ivar height: axis height
+
+	@type title: string
+	@ivar title: title above axis
+
+	@type xlabel: string
+	@ivar xlabel: label at the x-axis
+
+	@type ylabel: string
+	@ivar ylabel: label at the y-axis
+
+	@type xmin: float/None
+	@ivar xmin: minimum of x-axis
+
+	@type xmax: float/None
+	@ivar xmax: maximum of x-axis
+
+	@type ymin: float/None
+	@ivar ymin: minimum of y-axis
+
+	@type ymax: float/None
+	@ivar ymax: maximum of y-axis
+
+	@type xtick: list/None
+	@ivar xtick: location of ticks at x-axis
+
+	@type ytick: list/None
+	@ivar ytick: location of ticks at y-axis
+
+	@type xticklabels: list/None
+	@ivar xticklabels: labeling of ticks
+
+	@type yticklabels: list/None
+	@ivar yticklabels: labeling of ticks
+
+	@type equal: boolean/None
+	@ivar equal: forces units on all axis to have equal lengths
+
+	@type grid: boolean/None
+	@ivar grid: enables major grid
+
+	@type plots: list
+	@ivar plots: list of plots contained in this axis
+	"""
+
 	_ca = None
 
 	@staticmethod
 	def gca():
+		"""
+		Returns the currently active axis.
+		"""
+
 		if not Axis._ca:
 			Axis()
 		return Axis._ca
 
 
 	def __init__(self, fig=None, *args, **kwargs):
+		"""
+		Initializes axis properties.
+		"""
+
 		# position of axis
 		self.top = 0.
 		self.left = 0.
@@ -48,10 +114,10 @@ class Axis(object):
 		self.yticklabels = kwargs.get('yticklabels', None)
 
 		# controls aspect ratio
-		self.equal = kwargs.get('equal', False)
+		self.equal = kwargs.get('equal', None)
 
 		# grid lines
-		self.grid = kwargs.get('grid', False)
+		self.grid = kwargs.get('grid', None)
 
 		# add axis to figure
 		if not self.figure:
@@ -85,7 +151,7 @@ class Axis(object):
 			'ylabel']
 
 		for prop in properties:
-			if self.__dict__.get(prop, None) not in ['', None, False]:
+			if self.__dict__.get(prop, None) not in ['', None]:
 				options.append('{0}={{{1}}}'.format(prop, self.__dict__[prop]))
 
 		if self.xlabel:

@@ -11,6 +11,10 @@ class Figure(object):
 
 	@staticmethod
 	def gcf():
+		"""
+		Returns currently active figure.
+		"""
+
 		if not Figure._cf:
 			Figure()
 		return Figure._cf
@@ -18,20 +22,28 @@ class Figure(object):
 
 	def __new__(cls, idx=None, *args, **kwargs):
 		if idx in Figure._figures:
+			# move focus
+			Figure._cf = Figure._figures[idx]
+
 			# figure with specified ID already exists
-			return Figure._figures[idx]
+			return Figure._cf
 		else:
 			# create new figure
 			fig = object.__new__(cls, idx, *args, **kwargs)
 			fig._idx = min_free(Figure._figures.keys())
 
-			# store figure
+			# store figure reference and move focus
 			Figure._figures[fig._idx] = fig
+			Figure._cf = fig
 
 			return fig
 
 
 	def __init__(self, *args, **kwargs):
+		"""
+		Initializes figure properties.
+		"""
+
 		self.axes = []
 
 		# width and height of the figure
@@ -41,13 +53,10 @@ class Figure(object):
 		# space around axes
 		self.margin = kwargs.get('margin', 2.)
 
-		# move focus to this figure
-		Figure._cf = self
-
 
 	def render(self):
 		"""
-		Returns the LaTeX code for this figure.
+		Creates and returns LaTeX code for this figure.
 
 		@rtype: string
 		@return: LaTeX code for this figure
