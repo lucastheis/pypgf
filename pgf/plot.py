@@ -2,12 +2,60 @@ from numpy import asarray, arange, min, max
 from axis import Axis
 from string import replace
 from re import match
+from rgb import RGB
 
 class Plot(object):
+	"""
+	Represents line plots.
+
+	@type axis: L{Axis}
+	@ivar axis: reference to assigned axis
+
+	@type xvalues: array_like
+	@ivar xvalues: x-coordinates of data points
+
+	@type yvalues: array_like
+	@ivar yvalues: y-coordinates of data points
+
+	@type line_style: string/None
+	@ivar line_style: solid, dashed, dotted or other line styles
+
+	@type line_width: float/None
+	@ivar line_width: line width in points
+
+	@type opacity: float/None
+	@ivar opacity: opacity between 0.0 and 1.0
+
+	@type color: string/L{RGB}/None
+	@ivar color: line and marker color
+
+	@type marker: string/None
+	@ivar marker: marker style in PGFPlots notation
+
+	@type marker_size: float/None
+	@ivar marker_size: marker size
+
+	@type marker_edge_color: string/L{RGB}/None
+	@ivar marker_edge_color: marker border color
+
+	@type marker_face_color: string/L{RGB}/None
+	@ivar marker_face_color: marker color
+
+	@type marker_opacity: float/None
+	@ivar marker_opacity: marker opacity between 0.0 and 1.0
+
+	@type pgf_options: list
+	@ivar pgf_options: custom PGFPlots plot options
+	"""
+
 	def __init__(self, *args, **kwargs):
+		"""
+		Initializes plot properties.
+		"""
+
 		# add plot to axis
 		self.axis = kwargs.get('axis', Axis.gca())
-		self.axis.plots.append(self)
+		self.axis.children.append(self)
 
 		# data points
 		if len(args) < 1:
@@ -33,9 +81,19 @@ class Plot(object):
 		self.marker_face_color = kwargs.get('marker_face_color', None)
 		self.marker_opacity = kwargs.get('marker_opacity', None)
 
+		# custom plot options
+		self.pgf_options = kwargs.get('pgf_options', [])
+
 
 	def render(self):
-		options = []
+		"""
+		Produces LaTeX code for this plot.
+
+		@rtype: string
+		@return: LaTeX code for this plot
+		"""
+
+		options = list(self.pgf_options)
 		marker_options = ['solid']
 
 		if self.line_style:
@@ -44,8 +102,10 @@ class Plot(object):
 			options.append('only marks')
 		if self.line_width:
 			options.append('line width={0}pt'.format(self.line_width))
-		if self.color:
-			options.append(str(self.color))
+		if isinstance(self.color, RGB):
+			options.append('color={0}'.format(self.color))
+		elif isinstance(self.color, str):
+			options.append(self.color)
 		if self.opacity:
 			options.append('opacity={0}'.format(self.opacity))
 		if self.marker:
@@ -74,6 +134,12 @@ class Plot(object):
 
 
 	def limits(self):
+		"""
+		Returns data point limits as [xmin, xmax, ymin, ymax].
+
+		@rtype: list
+		@return: data point limits
+		"""
 		return [
 			min(self.xvalues),
 			max(self.xvalues),

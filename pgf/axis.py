@@ -56,8 +56,11 @@ class Axis(object):
 	@type grid: boolean/None
 	@ivar grid: enables major grid
 
-	@type plots: list
-	@ivar plots: list of plots contained in this axis
+	@type pgf_options: list
+	@ivar pgf_options: custom PGFPlots axis options
+
+	@type children: list
+	@ivar children: list of plots contained in this axis
 	"""
 
 	_ca = None
@@ -90,7 +93,7 @@ class Axis(object):
 		self.figure = fig
 
 		# plots contained in this axis
-		self.plots = []
+		self.children = []
 
 		# title above this axis
 		self.title = kwargs.get('title', '')
@@ -124,12 +127,15 @@ class Axis(object):
 			self.figure = Figure.gcf()
 		self.figure.axes.append(self)
 
+		# custom axis options
+		self.pgf_options = kwargs.get('pgf_options', [])
+
 		Axis._ca = self
 
 
 	def render(self):
 		"""
-		Returns the LaTeX code for this axis.
+		Produces the LaTeX code for this axis.
 
 		@rtype: string
 		@return: LaTeX code for this axis
@@ -140,6 +146,7 @@ class Axis(object):
 			'scale only axis',
 			'width={0}cm'.format(self.width),
 			'height={0}cm'.format(self.height)]
+		options.extend(self.pgf_options)
 
 		properties = [
 			'title',
@@ -176,8 +183,8 @@ class Axis(object):
 				','.join(str(t) for t in self.yticklabels)))
 
 		tex = '\\begin{axis}[\n' + indent(',\n'.join(options), 2) + '\n\t]\n'
-		for plot in self.plots:
-			tex += indent(plot.render())
+		for child in self.children:
+			tex += indent(child.render())
 		tex += '\\end{axis}\n'
 
 		return tex
