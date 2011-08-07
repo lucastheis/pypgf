@@ -22,8 +22,9 @@ class Plot(object):
 
 		# line style
 		self.line_style = kwargs.get('line_style', 'solid')
+		self.line_width = kwargs.get('line_width', None)
 		self.opacity = kwargs.get('opacity', None)
-		self.color = kwargs.get('color', 'blue')
+		self.color = kwargs.get('color', None)
 
 		# marker style
 		self.marker = kwargs.get('marker', 'no marker')
@@ -41,6 +42,8 @@ class Plot(object):
 			options.append(self.line_style)
 		else:
 			options.append('only marks')
+		if self.line_width:
+			options.append('line width={0}pt'.format(self.line_width))
 		if self.color:
 			options.append(str(self.color))
 		if self.opacity:
