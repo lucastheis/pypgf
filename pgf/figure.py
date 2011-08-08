@@ -68,10 +68,10 @@ class Figure(object):
 		if self.axes:
 			if not width:
 				width = self.margin * 2. \
-					+ max([ax.left + ax.width for ax in self.axes])
+					+ max([ax.at[0] + ax.width for ax in self.axes])
 			if not height:
 				height = self.margin * 2. \
-					+ max([ax.top + ax.height for ax in self.axes])
+					+ max([ax.at[1] + ax.height for ax in self.axes])
 		else:
 			if not width:
 				width = self.margin * 2. + 1.

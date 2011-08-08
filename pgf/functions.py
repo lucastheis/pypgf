@@ -1,8 +1,9 @@
 from axis import Axis
 from figure import Figure
 from settings import Settings
+from legend import Legend
 from plot import Plot
-from numpy import asmatrix, inf, mean
+from numpy import asmatrix, inf, min
 
 def gcf():
 	"""
@@ -161,21 +162,21 @@ def axis(*args):
 				ax.equal = True
 
 			elif args[0] == 'square':
-				ax.width = ax.height = mean([gca().width, gca().height])
+				ax.width = ax.height = min([gca().width, gca().height])
 
 			elif args[0] == 'auto':
 				ax.xmin = ax.xmax = ax.ymin = ax.ymax = None
 
 			elif args[0] == 'tight':
-				if not ax.plots:
+				if not ax.children:
 					return
 
 				ax.xmin, ax.xmax = inf, -inf
 				ax.ymin, ax.ymax = inf, -inf
 
 				# find minimum and maximum of data points
-				for plot in ax.plots:
-					xmin, xmax, ymin, ymax = plot.limits()
+				for child in ax.children:
+					xmin, xmax, ymin, ymax = child.limits()
 					ax.xmin = min([ax.xmin, xmin])
 					ax.xmax = max([ax.xmax, xmax])
 					ax.ymin = min([ax.ymin, ymin])
@@ -196,3 +197,7 @@ def grid(value=None):
 
 def render():
 	return gcf().render()
+
+
+def legend(*args, **kwargs):
+	return Legend(*args, **kwargs)

@@ -29,5 +29,5 @@ class RGB:
 
 
 	def __str__(self):
-		return '{{rgb:red,{0};green,{1};blue,{2}}}'.format(
+		return '{{rgb,255:red,{0};green,{1};blue,{2}}}'.format(
 			self.red, self.green, self.blue)

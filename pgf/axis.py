@@ -5,11 +5,8 @@ class Axis(object):
 	"""
 	Manages axis properties.
 
-	@type top: float
-	@ivar top: axis position
-
-	@type left: float
-	@ivar left: axis position
+	@type at: tuple
+	@ivar at: axis position
 
 	@type width: float
 	@ivar width: axis width
@@ -81,9 +78,10 @@ class Axis(object):
 		Initializes axis properties.
 		"""
 
-		# position of axis
-		self.top = 0.
-		self.left = 0.
+		self.legend = None
+
+		# axis position
+		self.at = [0., 0.]
 
 		# width and height of axis
 		self.width = 8.
@@ -142,7 +140,7 @@ class Axis(object):
 		"""
 
 		options = [
-			'at={{({0}, {1})}}'.format(self.left, self.top),
+			'at={{({0}, {1})}}'.format(self.at[0], self.at[1]),
 			'scale only axis',
 			'width={0}cm'.format(self.width),
 			'height={0}cm'.format(self.height)]
@@ -161,6 +159,8 @@ class Axis(object):
 			if self.__dict__.get(prop, None) not in ['', None]:
 				options.append('{0}={{{1}}}'.format(prop, self.__dict__[prop]))
 
+		if self.legend:
+			options.append(self.legend.render())
 		if self.xlabel:
 			options.append('xlabel near ticks')
 		if self.ylabel:
