@@ -3,6 +3,7 @@ from axis import Axis
 from string import replace
 from re import match
 from rgb import RGB
+from utils import indent
 
 class Plot(object):
 	"""
@@ -125,7 +126,11 @@ class Plot(object):
 		if marker_options:
 			options.append('mark options={{{0}}}'.format(', '.join(marker_options)))
 
-		tex = '\\addplot+[{0}] coordinates {{\n'.format(', '.join(options))
+		options_string = ', '.join(options)
+		if len(options_string) > 60:
+			options_string = '\n' + indent(',\n'.join(options))
+
+		tex = '\\addplot+[{0}] coordinates {{\n'.format(options_string)
 		for x, y in zip(self.xvalues, self.yvalues):
 			tex += '\t({0}, {1})\n'.format(x, y)
 		tex += '};\n'

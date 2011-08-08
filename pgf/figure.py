@@ -1,4 +1,5 @@
 from os import system
+from os.path import splitext
 from utils import min_free, indent
 from settings import Settings
 from numpy.random import randint
@@ -109,21 +110,57 @@ class Figure(object):
 		return tex
 
 
-	def draw(self):
+	def compile(self):
 		tex_file = Settings.tmp_dir + 'pgf_{0}_{1}.tex'.format(Figure._session, self._idx)
 		pdf_file = Settings.tmp_dir + 'pgf_{0}_{1}.pdf'.format(Figure._session, self._idx)
-		tex_command = Settings.command.format('-output-directory {0} {1}')
-		tex_command = tex_command.format(Settings.tmp_dir, tex_file)
-		pdf_command = 'open {0}'.format(pdf_file)
+
+		command = Settings.pdf_compile.format('-output-directory {0} {1}')
+		command = command.format(Settings.tmp_dir, tex_file)
 
 		# write LaTeX file
 		with open(tex_file, 'w') as handle:
 			handle.write(self.render())
 
-		# compile LaTeX to PDF
-		if system(tex_command):
-			raise RuntimeError('Compiling LaTeX to PDF failed. Sorry.')
+		# compile
+		if system(command):
+			raise RuntimeError('Compiling TeX source file to PDF failed.')
 
-		# open PDF file
-		if system(pdf_command):
-			raise RuntimeError('Can\'t open file {0}.'.format(pdf_file))
+		return pdf_file
+
+
+	def draw(self):
+		"""
+		Compiles LaTeX code and tries to open the resulting PDF file.
+		"""
+
+		if system(Settings.pdf_view.format(self.compile())):
+			raise RuntimeError('Could not open PDF file.')
+
+
+	def save(self, filename, format=None):
+		"""
+		Saves figure to specified file. If no file format is given, the
+		file format is guessed based on the filename extension.
+
+		@type  filename: string
+		@param filename: file location
+
+		@type  format: string/None
+		@param format: currently either 'pdf' or 'tex'
+		"""
+
+		if format is None:
+			format = splitext(filename)[1][1:]
+		format = format.lower()
+
+		if format not in ['pdf', 'tex']:
+			raise ValueError('Unknown format \'{0}\'.'.format(format))
+
+		if format == 'pdf':
+			# save PDF file
+			system('cp {0} {1}'.format(self.compile(), filename))
+
+		elif format == 'tex':
+			# save TeX file
+			with open(filename, 'w') as handle:
+				handle.write(self.render())

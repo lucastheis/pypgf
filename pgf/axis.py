@@ -182,7 +182,7 @@ class Axis(object):
 			options.append('yticklabels={{{0}}}'.format(
 				','.join(str(t) for t in self.yticklabels)))
 
-		tex = '\\begin{axis}[\n' + indent(',\n'.join(options), 2) + '\n\t]\n'
+		tex = '\\begin{axis}[\n' + indent(',\n'.join(options)) + ']\n'
 		for child in self.children:
 			tex += indent(child.render())
 		tex += '\\end{axis}\n'
