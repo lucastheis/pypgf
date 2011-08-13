@@ -223,6 +223,10 @@ def axis(*args):
 					ax.ymin = min([ax.ymin, ymin])
 					ax.ymax = max([ax.ymax, ymax])
 
+			elif (args[0] == 'center') or (args[0] == 'origin'):
+				ax.axis_x_line = 'center'
+				ax.axis_y_line = 'middle'
+
 		elif isinstance(args[0], list) or isinstance(args[0], ndarray):
 			gca().xmin, gca().xmax, gca().ymin, gca().ymax = args[0]
 
@@ -242,3 +246,17 @@ def render():
 
 def legend(*args, **kwargs):
 	return Legend(*args, **kwargs)
+
+
+def save(filename, format=None):
+	gcf().save(filename, format)
+
+
+def box(value=None):
+	box_on = (gca().axis_x_line is None) and (gca().axis_y_line is None)
+	if value == 'off' or (value is None and box_on):
+		gca().axis_x_line = 'bottom'
+		gca().axis_y_line = 'left'
+	elif value == 'on' or (value is None and not box_on):
+		gca().axis_x_line = None
+		gca().axis_y_line = None

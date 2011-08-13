@@ -21,14 +21,14 @@ class RGB:
 		if isinstance(red, int):
 			self.type = int
 			if not (0 <= red <= 255) or \
-				not (0 <= green <= 255) or \
-				not (0 <= blue <= 255):
+			   not (0 <= green <= 255) or \
+			   not (0 <= blue <= 255):
 				raise ValueError('Integer color values should be between 0 and 255.')
 		else:
 			self.type = float
 			if not (0. <= red <= 1.) or \
-				not (0. <= green <= 1.) or \
-				not (0. <= blue <= 1.):
+			   not (0. <= green <= 1.) or \
+			   not (0. <= blue <= 1.):
 				raise ValueError('Real Color values should be between 0 and 255.')
 
 		self.red = red

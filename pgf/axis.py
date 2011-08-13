@@ -53,6 +53,12 @@ class Axis(object):
 	@type grid: boolean/None
 	@ivar grid: enables major grid
 
+	@type axis_x_line: string/None
+	@ivar axis_x_line: x-axis position, e.g. 'middle', 'top', 'bottom', 'none'
+
+	@type axis_y_line: string/None
+	@ivar axis_y_line: y-axis position, e.g. 'center', 'left', 'right', 'none'
+
 	@type pgf_options: list
 	@ivar pgf_options: custom PGFPlots axis options
 
@@ -113,6 +119,10 @@ class Axis(object):
 		# tick labels
 		self.xticklabels = kwargs.get('xticklabels', None)
 		self.yticklabels = kwargs.get('yticklabels', None)
+
+		# axis positions
+		self.axis_x_line = kwargs.get('axis_x_line', None)
+		self.axis_y_line = kwargs.get('axis_y_line', None)
 
 		# controls aspect ratio
 		self.equal = kwargs.get('equal', None)
@@ -181,6 +191,10 @@ class Axis(object):
 		if self.yticklabels:
 			options.append('yticklabels={{{0}}}'.format(
 				','.join(str(t) for t in self.yticklabels)))
+		if self.axis_x_line:
+			options.append('axis x line={0}'.format(self.axis_x_line))
+		if self.axis_y_line:
+			options.append('axis y line={0}'.format(self.axis_y_line))
 
 		tex = '\\begin{axis}[\n' + indent(',\n'.join(options)) + ']\n'
 		for child in self.children:
