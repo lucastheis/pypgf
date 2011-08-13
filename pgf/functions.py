@@ -3,6 +3,7 @@ from figure import Figure
 from settings import Settings
 from legend import Legend
 from plot import Plot
+from surfplot import SurfPlot
 from numpy import asmatrix, inf, min
 
 def gcf():
@@ -138,6 +139,7 @@ def errorbar(*args, **kwargs):
 	B{Examples:}
 
 		>>> errorbar(y, y_err)
+		>>> errorbar(y, y_err, 'r.')
 		>>> errorbar(x, y, y_err)
 		>>> errorbar(x, y, x_err, y_err)
 	"""
@@ -155,6 +157,10 @@ def errorbar(*args, **kwargs):
 		args = args[:-1]
 
 	plot(format_string, *args, **kwargs)
+
+
+def surf(*args, **kwargs):
+	return SurfPlot(*args, **kwargs)
 
 
 def title(title):
