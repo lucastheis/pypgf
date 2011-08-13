@@ -6,4 +6,5 @@ class Settings(object):
 		'\\usepackage[utf8]{inputenc}\n' + \
 		'\\usepackage{amsmath}\n' + \
 		'\\usepackage{amssymb}\n' + \
-		'\\usepackage{pgfplots}\n'
+		'\\usepackage{pgfplots}\n' + \
+		'\\usepgflibrary{arrows}\n'

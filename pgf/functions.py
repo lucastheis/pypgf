@@ -4,6 +4,8 @@ from settings import Settings
 from legend import Legend
 from plot import Plot
 from surfplot import SurfPlot
+from arrow import Arrow
+from text import Text
 from numpy import asmatrix, inf, min
 
 def gcf():
@@ -260,3 +262,12 @@ def box(value=None):
 	elif value == 'on' or (value is None and not box_on):
 		gca().axis_x_line = None
 		gca().axis_y_line = None
+
+
+def arrow(x, y, dx, dy, arrow_style='-latex', **kwargs):
+	return Arrow(x, y, dx, dy, arrow_style=arrow_style, **kwargs)
+
+
+
+def text(x, y, text, **kwargs):
+	return Text(x, y, text, **kwargs)
