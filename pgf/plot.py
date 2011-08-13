@@ -1,4 +1,4 @@
-from numpy import asarray, arange, min, max
+from numpy import asarray, arange, min, max, shape, zeros
 from axis import Axis
 from string import replace
 from re import match
@@ -22,7 +22,7 @@ class Plot(object):
 	@ivar line_style: solid, dashed, dotted or other line styles
 
 	@type line_width: float/None
-	@ivar line_width: line width in points
+	@ivar line_width: line width in points (pt)
 
 	@type opacity: float/None
 	@ivar opacity: opacity between 0.0 and 1.0
@@ -45,6 +45,24 @@ class Plot(object):
 	@type marker_opacity: float/None
 	@ivar marker_opacity: marker opacity between 0.0 and 1.0
 
+	@type xvalues_error: array_like
+	@ivar xvalues_error: size of error bars in x-direction
+
+	@type yvalues_error: array_like
+	@ivar yvalues_error: size of error bars in y-direction
+
+	@type error_marker: string/None
+	@ivar error_marker: marker used for error bars, e.g. 'none'
+
+	@type error_color: string/L{RGB}/None
+	@ivar error_color: color of error bars
+
+	@type error_style: float/None
+	@ivar error_style: error bar style, e.g. solid, dashed or dotted
+
+	@type error_width: float/None
+	@ivar error_width: error bar line width in points (pt)
+
 	@type pgf_options: list
 	@ivar pgf_options: custom PGFPlots plot options
 	"""
@@ -53,10 +71,6 @@ class Plot(object):
 		"""
 		Initializes plot properties.
 		"""
-
-		# add plot to axis
-		self.axis = kwargs.get('axis', Axis.gca())
-		self.axis.children.append(self)
 
 		# data points
 		if len(args) < 1:
@@ -82,8 +96,24 @@ class Plot(object):
 		self.marker_face_color = kwargs.get('marker_face_color', None)
 		self.marker_opacity = kwargs.get('marker_opacity', None)
 
+		# error bars
+		self.xvalues_error = asarray(kwargs.get('xvalues_error', [])).flatten()
+		self.yvalues_error = asarray(kwargs.get('yvalues_error', [])).flatten()
+		self.error_marker = kwargs.get('error_marker', None)
+		self.error_color = kwargs.get('error_color', None)
+		self.error_style = kwargs.get('error_style', None)
+		self.error_width = kwargs.get('error_width', None)
+
 		# custom plot options
 		self.pgf_options = kwargs.get('pgf_options', [])
+
+		# catch common mistakes
+		if not isinstance(self.pgf_options, list):
+			raise TypeError('pgf_options should be a list.')
+
+		# add plot to axis
+		self.axis = kwargs.get('axis', Axis.gca())
+		self.axis.children.append(self)
 
 
 	def render(self):
@@ -94,9 +124,11 @@ class Plot(object):
 		@return: LaTeX code for this plot
 		"""
 
-		options = list(self.pgf_options)
+		options = []
 		marker_options = ['solid']
+		error_options = []
 
+		# basic properties
 		if self.line_style:
 			options.append(self.line_style)
 		else:
@@ -113,6 +145,8 @@ class Plot(object):
 			options.append('mark={0}'.format(replace(self.marker, '.', '*')))
 		else:
 			options.append('no marks')
+
+		# marker properties
 		if self.marker_edge_color:
 			marker_options.append(str(self.marker_edge_color))
 		if self.marker_face_color:
@@ -126,13 +160,48 @@ class Plot(object):
 		if marker_options:
 			options.append('mark options={{{0}}}'.format(', '.join(marker_options)))
 
+		# error bar properties
+		if len(self.xvalues_error) or len(self.yvalues_error):
+			options.append('error bars/.cd')
+		if len(self.xvalues_error):
+			options.append('x dir=both')
+			options.append('x explicit')
+		if len(self.yvalues_error):
+			options.append('y dir=both')
+			options.append('y explicit')
+		if self.error_marker:
+			options.append('error mark={0}'.format(self.error_marker))
+		if self.error_color:
+			error_options.append('color={0}'.format(self.error_color))
+		if self.error_style:
+			error_options.append(self.error_style)
+		if self.error_width:
+			error_options.append('line width={0}pt'.format(self.error_width))
+		if error_options:
+			options.append('error bar style={{{0}}}'.format( ', '.join(error_options)))
+
+		# custom properties
+		options.extend(list(self.pgf_options))
+
+		# summarize options into one string
 		options_string = ', '.join(options)
-		if len(options_string) > 60:
+		if len(options_string) > 70:
 			options_string = '\n' + indent(',\n'.join(options))
 
 		tex = '\\addplot+[{0}] coordinates {{\n'.format(options_string)
-		for x, y in zip(self.xvalues, self.yvalues):
-			tex += '\t({0}, {1})\n'.format(x, y)
+		if len(self.xvalues_error) or len(self.yvalues_error):
+			x_error = self.xvalues_error if len(self.xvalues_error) \
+				else zeros(shape(self.yvalues_error))
+			y_error = self.yvalues_error if len(self.yvalues_error) \
+				else zeros(shape(self.xvalues_error))
+
+			# render plot with error bars
+			for x, y, e, f in zip(self.xvalues, self.yvalues, x_error, y_error):
+				tex += '\t({0}, {1}) +- ({2}, {3})\n'.format(x, y, e, f)
+		else:
+			# render plot coordinates
+			for x, y in zip(self.xvalues, self.yvalues):
+				tex += '\t({0}, {1})\n'.format(x, y)
 		tex += '};\n'
 
 		return tex

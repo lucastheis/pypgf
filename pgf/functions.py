@@ -110,6 +110,14 @@ def plot(*args, **kwargs):
 	if 'marker' in kwargs and 'line_style' not in kwargs:
 		kwargs['line_style'] = 'only marks'
 
+	# error bar shorthands
+	if 'xerr' in kwargs:
+		kwargs['xvalues_error'] = kwargs['xerr']
+		kwargs.pop('xerr')
+	if 'yerr' in kwargs:
+		kwargs['yvalues_error'] = kwargs['yerr']
+		kwargs.pop('yerr')
+
 	# if arguments contain multiple rows, create multiple plots
 	if (len(args) > 1) and (args[1].shape[0] > 1) and (args[0].shape[0] == 1):
 		return [plot(args[0], *[arg[i] for arg in args[1:]], **kwargs)
@@ -120,6 +128,33 @@ def plot(*args, **kwargs):
 			for i in range(len(args[0]))]
 
 	return Plot(*args, **kwargs)
+
+
+
+def errorbar(*args, **kwargs):
+	"""
+	Plot lines or markers with error bars.
+
+	B{Examples:}
+
+		>>> errorbar(y, y_err)
+		>>> errorbar(x, y, y_err)
+		>>> errorbar(x, y, x_err, y_err)
+	"""
+
+	# split formatting information from data points
+	format_string = ''.join([arg for arg in args if isinstance(arg, str)])
+	args = [asmatrix(arg) for arg in args if not isinstance(arg, str)]
+
+	if len(args) > 3:
+		kwargs['xvalues_error'] = args[-2]
+		kwargs['yvalues_error'] = args[-1]
+		args = args[:-2]
+	if len(args) > 1:
+		kwargs['yvalues_error'] = args[-1]
+		args = args[:-1]
+
+	plot(format_string, *args, **kwargs)
 
 
 def title(title):
