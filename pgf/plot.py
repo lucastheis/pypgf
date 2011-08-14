@@ -64,7 +64,10 @@ class Plot(object):
 	@ivar error_width: error bar line width in points (pt)
 
 	@type ycomb: boolean
-	@ivar ycomb: if enabled, create stem plot
+	@ivar ycomb: enables comb (or stem) plot
+
+	@type xcomb: boolean
+	@ivar xcomb: enables horizontal comb (or stem) plot
 
 	@type pgf_options: list
 	@ivar pgf_options: custom PGFPlots plot options
@@ -107,8 +110,9 @@ class Plot(object):
 		self.error_style = kwargs.get('error_style', None)
 		self.error_width = kwargs.get('error_width', None)
 
-		# stem plot
+		# comb (or stem) plots
 		self.ycomb = kwargs.get('ycomb', False)
+		self.xcomb = kwargs.get('xcomb', False)
 
 		# custom plot options
 		self.pgf_options = kwargs.get('pgf_options', [])
@@ -186,8 +190,11 @@ class Plot(object):
 		if error_options:
 			options.append('error bar style={{{0}}}'.format( ', '.join(error_options)))
 
+		# comb plots
 		if self.ycomb:
 			options.append('ycomb')
+		elif self.xcomb:
+			options.append('xcomb')
 
 		# custom properties
 		options.extend(list(self.pgf_options))
@@ -223,6 +230,7 @@ class Plot(object):
 		@rtype: list
 		@return: data point limits
 		"""
+
 		return [
 			min(self.xvalues),
 			max(self.xvalues),

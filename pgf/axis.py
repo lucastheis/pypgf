@@ -1,5 +1,6 @@
 from utils import indent
 from figure import Figure
+from numpy import min, max, inf
 
 class Axis(object):
 	"""
@@ -58,6 +59,15 @@ class Axis(object):
 
 	@type axis_y_line: string/None
 	@ivar axis_y_line: y-axis position, e.g. 'center', 'left', 'right', 'none'
+
+	@type ybar: boolean
+	@ivar ybar: enables bar plot (or histogram)
+
+	@type xbar: boolean
+	@ivar xbar: enables horizontal bar plot
+
+	@type stacked: boolean
+	@ivar stacked: if enabled, bar plots are stacked
 
 	@type pgf_options: list
 	@ivar pgf_options: custom PGFPlots axis options
@@ -124,6 +134,11 @@ class Axis(object):
 		self.axis_x_line = kwargs.get('axis_x_line', None)
 		self.axis_y_line = kwargs.get('axis_y_line', None)
 
+		# bar plots
+		self.ybar = kwargs.get('ybar', False)
+		self.xbar = kwargs.get('xbar', False)
+		self.stacked = kwargs.get('stacked', False)
+
 		# controls aspect ratio
 		self.equal = kwargs.get('equal', None)
 
@@ -169,6 +184,7 @@ class Axis(object):
 			if self.__dict__.get(prop, None) not in ['', None]:
 				options.append('{0}={{{1}}}'.format(prop, self.__dict__[prop]))
 
+		# different properties
 		if self.legend:
 			options.append(self.legend.render())
 		if self.xlabel:
@@ -179,6 +195,8 @@ class Axis(object):
 			options.append('axis equal=true')
 		if self.grid:
 			options.append('grid=major')
+
+		# ticks and tick labels
 		if self.xtick:
 			options.append('xtick={{{0}}}'.format(
 				','.join(str(t) for t in self.xtick)))
@@ -191,10 +209,22 @@ class Axis(object):
 		if self.yticklabels:
 			options.append('yticklabels={{{0}}}'.format(
 				','.join(str(t) for t in self.yticklabels)))
+
+		# axis positions
 		if self.axis_x_line:
 			options.append('axis x line={0}'.format(self.axis_x_line))
 		if self.axis_y_line:
 			options.append('axis y line={0}'.format(self.axis_y_line))
+
+		# bar plots
+		if self.ybar and self.stacked:
+			options.append('ybar stacked')
+		elif self.ybar:
+			options.append('ybar')
+		elif self.xbar and self.stacked:
+			options.append('xbar stacked')
+		elif self.xbar:
+			options.append('xbar')
 
 		tex = '\\begin{axis}[\n' + indent(',\n'.join(options)) + ']\n'
 		for child in self.children:
@@ -202,3 +232,18 @@ class Axis(object):
 		tex += '\\end{axis}\n'
 
 		return tex
+
+
+	def limits():
+		_xmin, _xmax = inf, -inf
+		_ymin, _ymax = inf, -inf
+
+		# find minimum and maximum of data points
+		for child in self.children:
+			xmin, xmax, ymin, ymax = child.limits()
+			_xmin = min([_xmin, xmin])
+			_xmax = max([_xmax, xmax])
+			_ymin = min([_ymin, ymin])
+			_ymax = max([_ymax, ymax])
+
+		return [_xmin, _xmax, _ymin, _ymax]

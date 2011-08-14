@@ -151,7 +151,14 @@ def stem(*args, **kwargs):
 	if 'marker' not in kwargs:
 		kwargs['marker'] = 'o'
 
-	plot(*args, **kwargs)
+	return plot(*args, **kwargs)
+
+
+
+def bar(*args, **kwargs):
+	gca().ybar = True
+
+	return plot(*args, **kwargs)
 
 
 def errorbar(*args, **kwargs):
@@ -208,6 +215,9 @@ def ytick(ytick):
 def xticklabels(xticklabels):
 	gca().xticklabels = xticklabels
 
+	if not gca().xtick:
+		xtick(range(1, len(xticklabels) + 1))
+
 
 def yticklabels(yticklabels):
 	gca().yticklabels = yticklabels
@@ -233,17 +243,7 @@ def axis(*args):
 			elif args[0] == 'tight':
 				if not ax.children:
 					return
-
-				ax.xmin, ax.xmax = inf, -inf
-				ax.ymin, ax.ymax = inf, -inf
-
-				# find minimum and maximum of data points
-				for child in ax.children:
-					xmin, xmax, ymin, ymax = child.limits()
-					ax.xmin = min([ax.xmin, xmin])
-					ax.xmax = max([ax.xmax, xmax])
-					ax.ymin = min([ax.ymin, ymin])
-					ax.ymax = max([ax.ymax, ymax])
+				ax.xmin, ax.xmax, ax.ymin, ax.ymax = ax.limits()
 
 			elif (args[0] == 'center') or (args[0] == 'origin'):
 				ax.axis_x_line = 'center'

@@ -16,7 +16,7 @@ class Text(object):
 		if not isinstance(self.pgf_options, list):
 			raise TypeError('pgf_options should be a list.')
 
-		# add arrow to axis
+		# add text to axis
 		self.axis = kwargs.get('axis', Axis.gca())
 		self.axis.children.append(self)
 
