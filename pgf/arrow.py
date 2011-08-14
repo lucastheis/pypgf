@@ -41,3 +41,7 @@ class Arrow(object):
 
 		return '\\draw[{0}] (axis cs:{1},{2}) -- (axis cs:{3},{4});\n'.format(
 			options_string, self.x, self.y, self.x + self.dx, self.y + self.dy)
+
+
+	def limits(self):
+		return [self.x, self.x + self.dx, self.y, self.y + self.dy]

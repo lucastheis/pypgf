@@ -63,6 +63,9 @@ class Plot(object):
 	@type error_width: float/None
 	@ivar error_width: error bar line width in points (pt)
 
+	@type ycomb: boolean
+	@ivar ycomb: if enabled, create stem plot
+
 	@type pgf_options: list
 	@ivar pgf_options: custom PGFPlots plot options
 	"""
@@ -103,6 +106,9 @@ class Plot(object):
 		self.error_color = kwargs.get('error_color', None)
 		self.error_style = kwargs.get('error_style', None)
 		self.error_width = kwargs.get('error_width', None)
+
+		# stem plot
+		self.ycomb = kwargs.get('ycomb', False)
 
 		# custom plot options
 		self.pgf_options = kwargs.get('pgf_options', [])
@@ -179,6 +185,9 @@ class Plot(object):
 			error_options.append('line width={0}pt'.format(self.error_width))
 		if error_options:
 			options.append('error bar style={{{0}}}'.format( ', '.join(error_options)))
+
+		if self.ycomb:
+			options.append('ycomb')
 
 		# custom properties
 		options.extend(list(self.pgf_options))

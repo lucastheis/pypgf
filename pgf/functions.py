@@ -134,6 +134,26 @@ def plot(*args, **kwargs):
 
 
 
+def stem(*args, **kwargs):
+	"""
+	Plot data points as stems from the x-axis. Takes the same arguments as the
+	L{plot} function.
+
+	B{Examples:}
+
+		>>> stem(y)
+		>>> stem(x, y)
+		>>> stem(x, y, 'r', marker='none')
+	"""
+
+	kwargs['ycomb'] = True
+
+	if 'marker' not in kwargs:
+		kwargs['marker'] = 'o'
+
+	plot(*args, **kwargs)
+
+
 def errorbar(*args, **kwargs):
 	"""
 	Plot lines or markers with error bars.
