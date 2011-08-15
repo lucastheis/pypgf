@@ -54,6 +54,9 @@ class Axis(object):
 	@type grid: boolean/None
 	@ivar grid: enables major grid
 
+	@type axis_type: string
+	@ivar axis_type: 'axis', 'semilogxaxis', 'semilogyaxis' or 'loglogaxis'
+
 	@type axis_x_line: string/None
 	@ivar axis_x_line: x-axis position, e.g. 'middle', 'top', 'bottom', 'none'
 
@@ -129,6 +132,9 @@ class Axis(object):
 		# tick labels
 		self.xticklabels = kwargs.get('xticklabels', None)
 		self.yticklabels = kwargs.get('yticklabels', None)
+
+		# linear or logarithmic axis
+		self.axis_type = kwargs.get('axis_type', 'semilogxaxis')
 
 		# axis positions
 		self.axis_x_line = kwargs.get('axis_x_line', None)
@@ -228,10 +234,11 @@ class Axis(object):
 		if self.xbar or self.ybar:
 			options.append('area legend')
 
-		tex = '\\begin{axis}[\n' + indent(',\n'.join(options)) + ']\n'
+		tex = '\\begin{{{0}}}[\n'.format(self.axis_type)
+		tex += indent(',\n'.join(options)) + ']\n'
 		for child in self.children:
 			tex += indent(child.render())
-		tex += '\\end{axis}\n'
+		tex += '\\end{{{0}}}\n'.format(self.axis_type)
 
 		return tex
 

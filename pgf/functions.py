@@ -169,6 +169,21 @@ def stem(*args, **kwargs):
 	return plot(*args, **kwargs)
 
 
+def semilogx(*args, **kwargs):
+	gca().axis_type = 'semilogxaxis'
+	return plot(*args, **kwargs)
+
+
+
+def semilogy(*args, **kwargs):
+	gca().axis_type = 'semilogyaxis'
+	return plot(*args, **kwargs)
+
+
+def loglog(*args, **kwargs):
+	gca().axis_type = 'loglogaxis'
+	return plot(*args, **kwargs)
+
 
 def bar(*args, **kwargs):
 	gca().ybar = True
