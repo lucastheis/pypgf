@@ -225,6 +225,8 @@ class Axis(object):
 			options.append('xbar stacked')
 		elif self.xbar:
 			options.append('xbar')
+		if self.xbar or self.ybar:
+			options.append('area legend')
 
 		tex = '\\begin{axis}[\n' + indent(',\n'.join(options)) + ']\n'
 		for child in self.children:

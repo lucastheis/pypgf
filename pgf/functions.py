@@ -6,7 +6,7 @@ from plot import Plot
 from surfplot import SurfPlot
 from arrow import Arrow
 from text import Text
-from numpy import asmatrix, inf, min
+from numpy import asmatrix, inf, min, copy, arange, repeat
 
 def gcf():
 	"""
@@ -121,14 +121,29 @@ def plot(*args, **kwargs):
 		kwargs['yvalues_error'] = kwargs['yerr']
 		kwargs.pop('yerr')
 
-	# if arguments contain multiple rows, create multiple plots
-	if (len(args) > 1) and (args[1].shape[0] > 1) and (args[0].shape[0] == 1):
-		return [plot(args[0], *[arg[i] for arg in args[1:]], **kwargs)
-			for i in range(len(args[0]))]
+	if 'xvalues_error' in kwargs:
+		xvalues_error = copy(kwargs['xvalues_error'])
+	if 'yvalues_error' in kwargs:
+		yvalues_error = copy(kwargs['yvalues_error'])
 
-	elif (len(args) > 0) and (args[0].shape[0] > 1):
-		return [plot(*[arg[i] for arg in args], **kwargs)
-			for i in range(len(args[0]))]
+	if len(args) > 1:
+		if args[0].shape[0] < args[1].shape[0]:
+			args[0] = repeat(args[0], args[1].shape[0], 0)
+		if args[0].shape[0] > args[1].shape[0]:
+			args[1] = repeat(args[1], args[0].shape[0], 0)
+
+	# if arguments contain multiple rows, create multiple plots
+	if len(args) and args[0].shape[0] > 1:
+		plots = []
+
+		for i in range(len(args[0])):
+			if 'yvalues_error' in kwargs and yvalues_error.shape[0] > 1:
+				kwargs['yvalues_error'] = yvalues_error[i]
+			if 'xvalues_error' in kwargs and xvalues_error.shape[0] > 1:
+				kwargs['xvalues_error'] = xvalues_error[i]
+			plots.append(plot(*[arg[i] for arg in args], **kwargs))
+
+		return plots
 
 	return Plot(*args, **kwargs)
 
@@ -158,7 +173,26 @@ def stem(*args, **kwargs):
 def bar(*args, **kwargs):
 	gca().ybar = True
 
+	if 'stacked' in kwargs and kwargs['stacked']:
+		gca().stacked = True
+
 	return plot(*args, **kwargs)
+
+
+def barh(*args, **kwargs):
+	# split formatting information from data points
+	format_string = ''.join([arg for arg in args if isinstance(arg, str)])
+	args = [asmatrix(arg) for arg in args if not isinstance(arg, str)]
+
+	gca().xbar = True
+
+	if 'stacked' in kwargs and kwargs['stacked']:
+		gca().stacked = True
+
+	if len(args) == 1:
+		args = [args[0], arange(1, args[0].shape[1] + 1)]
+
+	return plot(format_string, *args, **kwargs)
 
 
 def errorbar(*args, **kwargs):
@@ -185,7 +219,7 @@ def errorbar(*args, **kwargs):
 		kwargs['yvalues_error'] = args[-1]
 		args = args[:-1]
 
-	plot(format_string, *args, **kwargs)
+	return plot(format_string, *args, **kwargs)
 
 
 def surf(*args, **kwargs):
@@ -286,7 +320,6 @@ def box(value=None):
 
 def arrow(x, y, dx, dy, arrow_style='-latex', **kwargs):
 	return Arrow(x, y, dx, dy, arrow_style=arrow_style, **kwargs)
-
 
 
 def text(x, y, text, **kwargs):
