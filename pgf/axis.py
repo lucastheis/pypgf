@@ -69,6 +69,9 @@ class Axis(object):
 	@type xbar: boolean
 	@ivar xbar: enables horizontal bar plot
 
+	@type bar_width: float/None
+	@type bar_width: determines the bar width for bar plots in cm
+
 	@type stacked: boolean
 	@ivar stacked: if enabled, bar plots are stacked
 
@@ -134,7 +137,7 @@ class Axis(object):
 		self.yticklabels = kwargs.get('yticklabels', None)
 
 		# linear or logarithmic axis
-		self.axis_type = kwargs.get('axis_type', 'semilogxaxis')
+		self.axis_type = kwargs.get('axis_type', 'axis')
 
 		# axis positions
 		self.axis_x_line = kwargs.get('axis_x_line', None)
@@ -143,6 +146,7 @@ class Axis(object):
 		# bar plots
 		self.ybar = kwargs.get('ybar', False)
 		self.xbar = kwargs.get('xbar', False)
+		self.bar_width = kwargs.get('bar_width', None)
 		self.stacked = kwargs.get('stacked', False)
 
 		# controls aspect ratio
@@ -233,6 +237,8 @@ class Axis(object):
 			options.append('xbar')
 		if self.xbar or self.ybar:
 			options.append('area legend')
+		if self.bar_width:
+			options.append('bar width={0}cm'.format(self.bar_width))
 
 		tex = '\\begin{{{0}}}[\n'.format(self.axis_type)
 		tex += indent(',\n'.join(options)) + ']\n'

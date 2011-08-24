@@ -188,6 +188,8 @@ def loglog(*args, **kwargs):
 def bar(*args, **kwargs):
 	gca().ybar = True
 
+	if 'bar_width' in kwargs:
+		gca().bar_width = kwargs['bar_width']
 	if 'stacked' in kwargs and kwargs['stacked']:
 		gca().stacked = True
 
