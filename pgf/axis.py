@@ -82,9 +82,6 @@ class Axis(object):
 	@ivar children: list of plots contained in this axis
 	"""
 
-	# currently active axis
-	_ca = None
-
 	@staticmethod
 	def gca():
 		"""
@@ -94,9 +91,9 @@ class Axis(object):
 		@return: the currently active axis
 		"""
 
-		if not Axis._ca:
+		if not Figure.gcf()._ca:
 			Axis()
-		return Axis._ca
+		return Figure.gcf()._ca
 
 
 	def __init__(self, fig=None, *args, **kwargs):
@@ -160,18 +157,19 @@ class Axis(object):
 		# grid lines
 		self.grid = kwargs.get('grid', None)
 
-		# add axis to figure (if figure is not controlled by axis grid)
-		if not self.figure:
-			self.figure = Figure.gcf()
-
-		from axisgrid import AxisGrid
-		if not self.figure.axes or isinstance(self.figure.axes[0], AxisGrid):
-			self.figure.axes.append(self)
-
 		# custom axis options
 		self.pgf_options = kwargs.get('pgf_options', [])
 
-		Axis._ca = self
+		if not self.figure:
+			self.figure = Figure.gcf()
+
+		# add axis to figure (if figure is not controlled by axis grid)
+		from axisgrid import AxisGrid
+		if not (self.figure.axes and isinstance(self.figure.axes[0], AxisGrid)):
+			self.figure.axes.append(self)
+
+		# make this axis active
+		self.figure._ca = self
 
 
 	def render(self):

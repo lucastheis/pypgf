@@ -354,11 +354,15 @@ def subplot(i, j, **kwargs):
 	fig = gcf()
 
 	if not (fig.axes and isinstance(fig.axes[0], AxisGrid)):
+		# create new axis grid
 		fig.axes = [AxisGrid()]
 
+	# get axis grid
 	grid = fig.axes[0]
 
 	if not (i, j) in grid.keys():
+		# create new axis in axis grid
 		grid[i, j] = Axis(fig=fig, **kwargs)
 
-	Axis._ca = grid[i, j]
+	# make axis active; TODO: find a less hacky solution
+	fig._ca = grid[i, j]

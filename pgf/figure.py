@@ -48,14 +48,21 @@ class Figure(object):
 		Initializes figure properties.
 		"""
 
-		self.axes = []
+		if '_initialized' not in self.__dict__:
+			self.axes = []
 
-		# width and height of the figure
-		self.width = None
-		self.height = None
+			# width and height of the figure
+			self.width = None
+			self.height = None
 
-		# space around axes
-		self.margin = kwargs.get('margin', 2.)
+			# space around axes
+			self.margin = kwargs.get('margin', 2.)
+
+			# currently active axis
+			self._ca = None
+
+			# make sure figure will not be initialized twice
+			self._initialized = True
 
 
 	def render(self):
