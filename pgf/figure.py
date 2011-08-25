@@ -49,7 +49,6 @@ class Figure(object):
 		"""
 
 		if '_initialized' not in self.__dict__:
-			print 'y'
 			self.axes = []
 
 			# width and height of the figure
