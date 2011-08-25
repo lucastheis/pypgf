@@ -1,4 +1,5 @@
 from axis import Axis
+from axisgrid import AxisGrid
 from figure import Figure
 from settings import Settings
 from legend import Legend
@@ -341,3 +342,17 @@ def arrow(x, y, dx, dy, arrow_style='-latex', **kwargs):
 
 def text(x, y, text, **kwargs):
 	return Text(x, y, text, **kwargs)
+
+
+def subplot(i, j, **kwargs):
+	fig = gcf()
+
+	if not (fig.axes and isinstance(fig.axes[0], AxisGrid)):
+		fig.axes = [AxisGrid()]
+
+	grid = fig.axes[0]
+
+	if not (i, j) in grid.keys():
+		grid[i, j] = Axis(fig=fig, **kwargs)
+
+	Axis._ca = grid[i, j]

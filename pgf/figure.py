@@ -5,7 +5,7 @@ from settings import Settings
 from numpy.random import randint
 
 class Figure(object):
-	# currently active figure
+	# figures, currently active figure and some identifier
 	_figures = {}
 	_cf = None
 	_session = randint(1E8)
@@ -14,6 +14,9 @@ class Figure(object):
 	def gcf():
 		"""
 		Returns currently active figure.
+
+		@rtype: Figure
+		@return: the currently active figure
 		"""
 
 		if not Figure._cf:
@@ -69,10 +72,10 @@ class Figure(object):
 		if self.axes:
 			if not width:
 				width = self.margin * 2. \
-					+ max([ax.at[0] + ax.width for ax in self.axes])
+					+ max(ax.at[0] + ax.width for ax in self.axes)
 			if not height:
 				height = self.margin * 2. \
-					+ max([ax.at[1] + ax.height for ax in self.axes])
+					+ max(ax.at[1] + ax.height for ax in self.axes)
 		else:
 			if not width:
 				width = self.margin * 2. + 1.
@@ -111,6 +114,13 @@ class Figure(object):
 
 
 	def compile(self):
+		"""
+		Generates LaTeX code and tries to compile it into a PDF file.
+
+		@rtype: string
+		@return: path to PDF file
+		"""
+
 		tex_file = Settings.tmp_dir + 'pgf_{0}_{1}.tex'.format(Figure._session, self._idx)
 		pdf_file = Settings.tmp_dir + 'pgf_{0}_{1}.pdf'.format(Figure._session, self._idx)
 

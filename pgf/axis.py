@@ -6,14 +6,14 @@ class Axis(object):
 	"""
 	Manages axis properties.
 
-	@type at: tuple
+	@type at: tuple/None
 	@ivar at: axis position
 
 	@type width: float
-	@ivar width: axis width
+	@ivar width: axis width in cm
 
 	@type height: float
-	@ivar height: axis height
+	@ivar height: axis height in cm
 
 	@type title: string
 	@ivar title: title above axis
@@ -82,12 +82,16 @@ class Axis(object):
 	@ivar children: list of plots contained in this axis
 	"""
 
+	# currently active axis
 	_ca = None
 
 	@staticmethod
 	def gca():
 		"""
 		Returns the currently active axis.
+
+		@rtype: Axis
+		@return: the currently active axis
 		"""
 
 		if not Axis._ca:
@@ -100,17 +104,18 @@ class Axis(object):
 		Initializes axis properties.
 		"""
 
+		# parent figure
+		self.figure = fig
+
+		# legend
 		self.legend = None
 
 		# axis position
-		self.at = [0., 0.]
+		self.at = kwargs.get('at', [0., 0.])
 
 		# width and height of axis
-		self.width = 8.
-		self.height = 7.
-
-		# parent figure
-		self.figure = fig
+		self.width = kwargs.get('width', 8.)
+		self.height = kwargs.get('height', 7.)
 
 		# plots contained in this axis
 		self.children = []
@@ -155,10 +160,14 @@ class Axis(object):
 		# grid lines
 		self.grid = kwargs.get('grid', None)
 
-		# add axis to figure
+		# add axis to figure (if figure is not controlled by axis grid)
 		if not self.figure:
 			self.figure = Figure.gcf()
-		self.figure.axes.append(self)
+
+		from axisgrid import AxisGrid
+
+		if not (self.figure.axes or isinstance(self.figure.axes[0], AxisGrid)):
+			self.figure.axes.append(self)
 
 		# custom axis options
 		self.pgf_options = kwargs.get('pgf_options', [])
@@ -175,11 +184,12 @@ class Axis(object):
 		"""
 
 		options = [
-			'at={{({0}, {1})}}'.format(self.at[0], self.at[1]),
 			'scale only axis',
 			'width={0}cm'.format(self.width),
 			'height={0}cm'.format(self.height)]
-		options.extend(self.pgf_options)
+
+		if self.at is not None:
+			options.append('at={{({0}cm, {1}cm)}}'.format(self.at[0], self.at[1]))
 
 		properties = [
 			'title',
@@ -240,6 +250,9 @@ class Axis(object):
 		if self.bar_width:
 			options.append('bar width={0}cm'.format(self.bar_width))
 
+		# custom options
+		options.extend(self.pgf_options)
+
 		tex = '\\begin{{{0}}}[\n'.format(self.axis_type)
 		tex += indent(',\n'.join(options)) + ']\n'
 		for child in self.children:
@@ -250,6 +263,11 @@ class Axis(object):
 
 
 	def limits():
+		"""
+		@rtype: list
+		@return: [xmin, xmax, ymin, ymax]
+		"""
+
 		_xmin, _xmax = inf, -inf
 		_ymin, _ymax = inf, -inf
 
