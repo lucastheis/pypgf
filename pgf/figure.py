@@ -24,7 +24,7 @@ class Figure(object):
 		return Figure._cf
 
 
-	def __new__(cls, idx=None, *args, **kwargs):
+	def __new__(cls, idx=None):
 		if idx in Figure._figures:
 			# move focus
 			Figure._cf = Figure._figures[idx]
@@ -33,7 +33,7 @@ class Figure(object):
 			return Figure._cf
 		else:
 			# create new figure
-			fig = object.__new__(cls, idx, *args, **kwargs)
+			fig = object.__new__(cls)
 			fig._idx = min_free(Figure._figures.keys())
 
 			# store figure reference and move focus

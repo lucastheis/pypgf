@@ -165,8 +165,7 @@ class Axis(object):
 			self.figure = Figure.gcf()
 
 		from axisgrid import AxisGrid
-
-		if not (self.figure.axes or isinstance(self.figure.axes[0], AxisGrid)):
+		if not self.figure.axes or isinstance(self.figure.axes[0], AxisGrid):
 			self.figure.axes.append(self)
 
 		# custom axis options
