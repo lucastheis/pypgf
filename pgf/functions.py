@@ -256,12 +256,18 @@ def ylabel(ylabel):
 	gca().ylabel = ylabel
 
 
-def xtick(xtick):
+def xtick(xtick, labels=None):
 	gca().xtick = xtick
 
+	if xticklabels is not None:
+		xticklabels(labels)
 
-def ytick(ytick):
+
+def ytick(ytick, labels=None):
 	gca().ytick = ytick
+
+	if yticklabels is not None:
+		yticklabels(labels)
 
 
 def xticklabels(xticklabels):
