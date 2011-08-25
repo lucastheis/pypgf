@@ -1,4 +1,4 @@
-from utils import indent
+from utils import indent, braces
 from axis import Axis
 from numpy import round
 
@@ -21,10 +21,9 @@ class Legend(object):
 
 	def render(self):
 		options = [
-			'legend entries={{{0}}}'.format(','.join(self.legend_entries)),
+			'legend entries={{{0}}}'.format(','.join(braces(self.legend_entries))),
 			'legend cell align={0}'.format(self.align)]
 		cell_options = []
-
 
 		if self.location:
 			anchor = []

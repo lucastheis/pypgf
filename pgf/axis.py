@@ -1,4 +1,4 @@
-from utils import indent
+from utils import indent, braces
 from figure import Figure
 from numpy import min, max, inf
 
@@ -222,10 +222,10 @@ class Axis(object):
 				','.join(str(t) for t in self.ytick)))
 		if self.xticklabels:
 			options.append('xticklabels={{{0}}}'.format(
-				','.join(str(t) for t in self.xticklabels)))
+				','.join(braces(self.xticklabels))))
 		if self.yticklabels:
 			options.append('yticklabels={{{0}}}'.format(
-				','.join(str(t) for t in self.yticklabels)))
+				','.join(braces(self.yticklabels))))
 
 		# axis positions
 		if self.axis_x_line:
