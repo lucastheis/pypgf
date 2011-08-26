@@ -217,13 +217,19 @@ class Axis(object):
 		if self.xtick:
 			options.append('xtick={{{0}}}'.format(
 				','.join(str(t) for t in self.xtick)))
+		elif self.xtick is not None:
+			options.append('xtick=\empty')
+			options.append('xtick scale label code/.code={}')
 		if self.ytick:
 			options.append('ytick={{{0}}}'.format(
 				','.join(str(t) for t in self.ytick)))
-		if self.xticklabels:
+		elif self.ytick is not None:
+			options.append('ytick=\empty')
+			options.append('ytick scale label code/.code={}')
+		if self.xticklabels is not None:
 			options.append('xticklabels={{{0}}}'.format(
 				','.join(braces(self.xticklabels))))
-		if self.yticklabels:
+		if self.yticklabels is not None:
 			options.append('yticklabels={{{0}}}'.format(
 				','.join(braces(self.yticklabels))))
 

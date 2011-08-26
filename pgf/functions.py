@@ -259,14 +259,14 @@ def ylabel(ylabel):
 def xtick(xtick, labels=None):
 	gca().xtick = xtick
 
-	if xticklabels is not None:
+	if labels is not None:
 		xticklabels(labels)
 
 
 def ytick(ytick, labels=None):
 	gca().ytick = ytick
 
-	if yticklabels is not None:
+	if labels is not None:
 		yticklabels(labels)
 
 
@@ -355,7 +355,7 @@ def subplot(i, j, **kwargs):
 
 	if not (fig.axes and isinstance(fig.axes[0], AxisGrid)):
 		# create new axis grid
-		fig.axes = [AxisGrid()]
+		fig.axes = [AxisGrid(**kwargs)]
 
 	# get axis grid
 	grid = fig.axes[0]
