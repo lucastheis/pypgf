@@ -69,6 +69,9 @@ class Plot(object):
 	@type xcomb: boolean
 	@ivar xcomb: enables horizontal comb (or stem) plot
 
+	@type legend_entry: string/None
+	@ivar legend_entry: legend entry for this plot
+
 	@type pgf_options: list
 	@ivar pgf_options: custom PGFPlots plot options
 	"""
@@ -113,6 +116,9 @@ class Plot(object):
 		# comb (or stem) plots
 		self.ycomb = kwargs.get('ycomb', False)
 		self.xcomb = kwargs.get('xcomb', False)
+
+		# legend entry for this plot
+		self.legend_entry = kwargs.get('legend_entry', None)
 
 		# custom plot options
 		self.pgf_options = kwargs.get('pgf_options', [])
@@ -219,6 +225,10 @@ class Plot(object):
 			for x, y in zip(self.xvalues, self.yvalues):
 				tex += '\t({0}, {1})\n'.format(x, y)
 		tex += '};\n'
+
+		if self.legend_entry is not None:
+			tex += '\\addlegendentry{{{0}}};'.format(
+				self.legend_entry.replace('_', '\\_'))
 
 		return tex
 

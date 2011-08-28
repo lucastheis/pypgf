@@ -114,8 +114,7 @@ class Figure(object):
 				'\t\\end{figure}\n'
 		else:
 			tex += '\t\\mbox{}\n'
-		tex += \
-			'\\end{document}'
+		tex += '\\end{document}'
 
 		return tex
 
