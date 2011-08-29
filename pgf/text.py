@@ -39,7 +39,7 @@ class Text(object):
 				options_string, self.x, self.y, self.text)
 		else:
 			return '\\node at (axis cs:{0},{1}) {{{2}}};\n'.format(
-				self.at[0], self.at[1], self.text)
+				self.x, self.y, self.text)
 
 
 	def limits(self):
