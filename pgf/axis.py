@@ -75,6 +75,9 @@ class Axis(object):
 	@type stacked: boolean
 	@ivar stacked: if enabled, bar plots are stacked
 
+	@type interval: boolean
+	@ivar interval: if enabled, neighboring values determine bar widths
+
 	@type pgf_options: list
 	@ivar pgf_options: custom PGFPlots axis options
 
@@ -150,6 +153,7 @@ class Axis(object):
 		self.xbar = kwargs.get('xbar', False)
 		self.bar_width = kwargs.get('bar_width', None)
 		self.stacked = kwargs.get('stacked', False)
+		self.interval = kwargs.get('interval', False)
 
 		# controls aspect ratio
 		self.equal = kwargs.get('equal', None)
@@ -240,10 +244,18 @@ class Axis(object):
 			options.append('axis y line={0}'.format(self.axis_y_line))
 
 		# bar plots
-		if self.ybar and self.stacked:
+		if self.ybar and self.interval:
+			options.append('ybar interval')
+			if not self.grid:
+				options.append('grid=none')
+		elif self.ybar and self.stacked:
 			options.append('ybar stacked')
 		elif self.ybar:
 			options.append('ybar')
+		elif self.xbar and self.interval:
+			options.append('xbar interval')
+			if not self.grid:
+				options.append('grid=none')
 		elif self.xbar and self.stacked:
 			options.append('xbar stacked')
 		elif self.xbar:
