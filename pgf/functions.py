@@ -7,7 +7,8 @@ from plot import Plot
 from surfplot import SurfPlot
 from arrow import Arrow
 from text import Text
-from numpy import asmatrix, inf, min, copy, arange, repeat
+from numpy import asmatrix, inf, min, copy, arange, repeat, isscalar, sum
+from numpy import histogram, append
 
 def gcf():
 	"""
@@ -203,14 +204,55 @@ def barh(*args, **kwargs):
 	args = [asmatrix(arg) for arg in args if not isinstance(arg, str)]
 
 	gca().xbar = True
-
-	if 'stacked' in kwargs and kwargs['stacked']:
-		gca().stacked = True
+	gca().stacked = kwargs.get('stacked', True)
 
 	if len(args) == 1:
 		args = [args[0], arange(1, args[0].shape[1] + 1)]
 
 	return plot(format_string, *args, **kwargs)
+
+
+def hist(values, bins=10, format_string='', normed=False, density=False, **kwargs):
+	"""
+	Computes and plots a histogram of the data provided.
+
+	B{Examples:}
+		>>> hist(x, 20, 'k')
+
+	@type  values: array_like
+	@param values: values from which to compute a histogram
+
+	@type  bins: int
+	@param bins: number of bins
+
+	@type  normed: boolean
+	@param normed: if true, the histogram is normalized to sum to 1
+
+	@type  density: boolean
+	@param density: if true, the histogram is normalized to yield a density
+
+	@rtype: L{Plot}
+	@return: a reference to the plot
+	"""
+
+	if isinstance(bins, str):
+		# correct arguments
+		if not format_string:
+			format_string = bins
+		bins = 10
+
+	hist, bin_edges = histogram(values, bins, density=density)
+
+	if normed:
+		hist = hist / sum(hist, dtype=float)
+
+	hist = append(hist, hist[-1])
+
+	kwargs['const_plot'] = True
+	kwargs['fill'] = True
+	kwargs['closed'] = True
+
+	return plot(bin_edges, hist, format_string, **kwargs)
 
 
 def errorbar(*args, **kwargs):

@@ -30,6 +30,9 @@ class Plot(object):
 	@type color: string/L{RGB}/None
 	@ivar color: line and marker color
 
+	@type fill: boolean/string/L{RGB}
+	@ivar fill: fill color; if true, a color is picked automatically
+
 	@type marker: string/None
 	@ivar marker: marker style in PGFPlots notation
 
@@ -69,6 +72,12 @@ class Plot(object):
 	@type xcomb: boolean
 	@ivar xcomb: enables horizontal comb (or stem) plot
 
+	@type closed: boolean
+	@ivar closed: if enabled, the last point is connected to the first
+
+	@type const_plot: boolean
+	@ivar const_plot: if true, values will no longer be linearly interpolated
+
 	@type legend_entry: string/None
 	@ivar legend_entry: legend entry for this plot
 
@@ -98,6 +107,8 @@ class Plot(object):
 		self.opacity = kwargs.get('opacity', None)
 		self.color = kwargs.get('color', None)
 
+		self.fill = kwargs.get('fill', False)
+
 		# marker style
 		self.marker = kwargs.get('marker', 'no marker')
 		self.marker_size = kwargs.get('marker_size', None)
@@ -116,6 +127,10 @@ class Plot(object):
 		# comb (or stem) plots
 		self.ycomb = kwargs.get('ycomb', False)
 		self.xcomb = kwargs.get('xcomb', False)
+
+		self.closed = kwargs.get('closed', False)
+
+		self.const_plot = kwargs.get('const_plot', False)
 
 		# legend entry for this plot
 		self.legend_entry = kwargs.get('legend_entry', None)
@@ -155,6 +170,11 @@ class Plot(object):
 			options.append('color={0}'.format(self.color))
 		elif isinstance(self.color, str):
 			options.append(self.color)
+		if self.fill:
+			if isinstance(self.color, str) or isinstance(self.color, RGB):
+				options.append('fill={0}'.format(self.fill))
+			else:
+				options.append('fill')
 		if self.opacity:
 			options.append('opacity={0}'.format(self.opacity))
 		if self.marker:
@@ -202,6 +222,9 @@ class Plot(object):
 		elif self.xcomb:
 			options.append('xcomb')
 
+		if self.const_plot:
+			options.append('const plot')
+
 		# custom properties
 		options.extend(list(self.pgf_options))
 
@@ -224,10 +247,13 @@ class Plot(object):
 			# render plot coordinates
 			for x, y in zip(self.xvalues, self.yvalues):
 				tex += '\t({0}, {1})\n'.format(x, y)
-		tex += '};\n'
+		if self.closed:
+			tex += '} \\closedcycle;'
+		else:
+			tex += '};\n'
 
 		if self.legend_entry is not None:
-			tex += '\\addlegendentry{{{0}}};'.format(
+			tex += '\\addlegendentry{{{0}}};\n'.format(
 				self.legend_entry.replace('_', '\\_'))
 
 		return tex
