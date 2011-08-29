@@ -203,7 +203,8 @@ class Axis(object):
 
 		for prop in properties:
 			if self.__dict__.get(prop, None) not in ['', None]:
-				options.append('{0}={{{1}}}'.format(prop, self.__dict__[prop]))
+				options.append('{0}={{{1}}}'.format(
+					prop, str(self.__dict__[prop]).replace('_', '\\_')))
 
 		# different properties
 		if self.legend:
@@ -221,12 +222,16 @@ class Axis(object):
 		if self.xtick:
 			options.append('xtick={{{0}}}'.format(
 				','.join(str(t) for t in self.xtick)))
+			if self.xticklabels:
+				options.append('xtick scale label code/.code={}')
 		elif self.xtick is not None:
 			options.append('xtick=\empty')
 			options.append('xtick scale label code/.code={}')
 		if self.ytick:
 			options.append('ytick={{{0}}}'.format(
 				','.join(str(t) for t in self.ytick)))
+			if self.yticklabels:
+				options.append('ytick scale label code/.code={}')
 		elif self.ytick is not None:
 			options.append('ytick=\empty')
 			options.append('ytick scale label code/.code={}')

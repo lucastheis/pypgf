@@ -78,6 +78,9 @@ class Plot(object):
 	@type const_plot: boolean
 	@ivar const_plot: if true, values will no longer be linearly interpolated
 
+	@type legend_entry: string/None
+	@ivar legend_entry: legend entry for this plot
+
 	@type pgf_options: list
 	@ivar pgf_options: custom PGFPlots plot options
 	"""
@@ -128,6 +131,9 @@ class Plot(object):
 		self.closed = kwargs.get('closed', False)
 
 		self.const_plot = kwargs.get('const_plot', False)
+
+		# legend entry for this plot
+		self.legend_entry = kwargs.get('legend_entry', None)
 
 		# custom plot options
 		self.pgf_options = kwargs.get('pgf_options', [])
@@ -245,6 +251,10 @@ class Plot(object):
 			tex += '} \\closedcycle;'
 		else:
 			tex += '};\n'
+
+		if self.legend_entry is not None:
+			tex += '\\addlegendentry{{{0}}};\n'.format(
+				self.legend_entry.replace('_', '\\_'))
 
 		return tex
 
