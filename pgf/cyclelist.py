@@ -5,7 +5,9 @@ class CycleList(object):
 		self.entries = []
 
 		for style in styles:
-			if isinstance(style, list):
+			if isinstance(style, dict):
+				self.append(**style)
+			elif isinstance(style, list):
 				self.append(*style)
 			else:
 				self.append(style)
@@ -40,7 +42,7 @@ class CycleList(object):
 		if not args and not kwargs:
 			raise TypeError('append() takes at least 1 argument')
 
-		self.entries.append((args, kwargs))
+		self.entries.append((list(args), kwargs))
 
 
 	def render(self):
@@ -55,8 +57,8 @@ class CycleList(object):
 
 		# generate string representations
 		for entry in self.entries:
-			for key, value in entry[1]:
-				entry[0].append('key=' + str(value))
+			for key, value in entry[1].items():
+				entry[0].append('{0}={1}'.format(key, value))
 			entries.append('\t{' + ', '.join(parse(arg) for arg in entry[0]) + '}')
 
 		return 'cycle list={\n' + ',\n'.join(entries) + '}'
@@ -65,10 +67,10 @@ class CycleList(object):
 # predefined cycle lists
 cycle_lists = {
 	'fancy': CycleList([
-			[RGB(10, 80, 230)],
-			[RGB(255, 83, 204)],
-			[RGB(170, 250, 120)],
-			[RGB(0, 0, 0)],
-			[RGB(255, 200, 0)],
+		{'color': RGB( 10,  80, 230), 'fill': RGB( 10,  80, 230)},
+		{'color': RGB(255,  83, 204), 'fill': RGB(255,  83, 204)},
+		{'color': RGB(170, 250, 120), 'fill': RGB(170, 250, 120)},
+		{'color': RGB(  0,   0,   0), 'fill': RGB(  0,   0,   0)},
+		{'color': RGB(255, 200,   0), 'fill': RGB(255, 200,   0)},
 		])
 }
