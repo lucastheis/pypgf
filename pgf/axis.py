@@ -1,4 +1,4 @@
-from utils import indent, braces
+from utils import indent, escape
 from figure import Figure
 from numpy import min, max, inf
 
@@ -237,10 +237,10 @@ class Axis(object):
 			options.append('ytick scale label code/.code={}')
 		if self.xticklabels is not None:
 			options.append('xticklabels={{{0}}}'.format(
-				','.join(braces(self.xticklabels))))
+				','.join(escape(self.xticklabels))))
 		if self.yticklabels is not None:
 			options.append('yticklabels={{{0}}}'.format(
-				','.join(braces(self.yticklabels))))
+				','.join(escape(self.yticklabels))))
 
 		# axis positions
 		if self.axis_x_line:

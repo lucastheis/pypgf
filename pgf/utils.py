@@ -1,4 +1,4 @@
-from numpy import min, max
+from numpy import min, max, iterable
 from string import rstrip
 
 def indent(text, times=1, ind='\t'):
@@ -26,9 +26,10 @@ def min_free(indices):
 	return min(list(set(range(max(indices) + 2)).difference(indices)))
 
 
-def braces(string):
+def escape(string):
 	"""
-	If string contains commas, put curly braces around it.
+	If string contains commas, put curly braces around the string. If string
+	contains underscore but no formulas, escape underscores.
 
 	@type  string: string/list
 	@param string: e.g. a legend entry or axis label
@@ -37,10 +38,13 @@ def braces(string):
 	@return: processed string(s)
 	"""
 
-	if isinstance(string, list):
-		return [braces(str(s)) for s in string]
+	if not isinstance(string, str) and iterable(string):
+		return [escape(s) for s in string]
+
+	if '$' not in string and r'\_' not in string:
+		string = str(string).replace('_', r'\_')
 
 	if ',' in string:
-		return '{' + string + '}'
+		return '{' + str(string) + '}'
 
 	return string
