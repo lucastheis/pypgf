@@ -78,6 +78,15 @@ class Axis(object):
 	@type interval: boolean
 	@ivar interval: if enabled, neighboring values determine bar widths
 
+	@type colormap: string/None
+	@ivar colormap: colormap used by some plots, e.g. 'hot', 'cool', 'bluered'
+
+	@type cycle_list: CycleList/list/None
+	@ivar cycle_list: a list of styles used for plots
+
+	@type cycle_list_name: String/None
+	@ivar cycle_list_name: a specific PGFPlots cycle list
+
 	@type pgf_options: list
 	@ivar pgf_options: custom PGFPlots axis options
 
@@ -157,6 +166,11 @@ class Axis(object):
 
 		# controls aspect ratio
 		self.equal = kwargs.get('equal', None)
+
+		# color and style specifications
+		self.colormap = kwargs.get('colormap', None)
+		self.cycle_list = kwargs.get('cycle_list', None)
+		self.cycle_list_name = kwargs.get('cycle_list_name', None)
 
 		# grid lines
 		self.grid = kwargs.get('grid', None)
@@ -269,6 +283,14 @@ class Axis(object):
 			options.append('area legend')
 		if self.bar_width:
 			options.append('bar width={0}cm'.format(self.bar_width))
+
+		# colors and line styles
+		if self.colormap:
+			options.append('colormap/{0}'.format(self.colormap))
+		if self.cycle_list:
+			options.append(self.cycle_list.render())
+		elif self.cycle_list_name:
+			options.append('cycle list name={0}'.format(self.cycle_list_name))
 
 		# custom options
 		options.extend(self.pgf_options)

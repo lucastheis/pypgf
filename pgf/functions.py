@@ -1,5 +1,6 @@
 from axis import Axis
 from axisgrid import AxisGrid
+from cyclelist import CycleList, cycle_lists
 from figure import Figure
 from settings import Settings
 from legend import Legend
@@ -62,6 +63,10 @@ def plot(*args, **kwargs):
 	format_string = ''.join([arg for arg in args if isinstance(arg, str)])
 	args = [asmatrix(arg) for arg in args if not isinstance(arg, str)]
 
+	if not len(args):
+		# no data is given, don't create a plot
+		return None
+
 	# parse format string into keyword arguments
 	if 'color' not in kwargs:
 		if 'r' in format_string:
@@ -110,10 +115,6 @@ def plot(*args, **kwargs):
 			kwargs['line_style'] = 'solid'
 		elif ':' in format_string:
 			kwargs['line_style'] = 'densely dotted'
-
-	# hide markers if no line style
-	if 'marker' in kwargs and 'line_style' not in kwargs:
-		kwargs['line_style'] = 'only marks'
 
 	# error bar shorthands
 	if 'xerr' in kwargs:
@@ -323,7 +324,7 @@ def yticklabels(yticklabels):
 	gca().yticklabels = yticklabels
 
 
-def axis(*args):
+def axis(*args, **kwargs):
 	if len(args) < 1:
 		return gca()
 
@@ -351,6 +352,12 @@ def axis(*args):
 
 		elif isinstance(args[0], list) or isinstance(args[0], ndarray):
 			gca().xmin, gca().xmax, gca().ymin, gca().ymax = args[0]
+
+	if 'width' in kwargs:
+		gca().width = kwargs['width']
+
+	if 'height' in kwargs:
+		gca().height = kwargs['height']
 
 
 def grid(value=None):
@@ -390,6 +397,27 @@ def arrow(x, y, dx, dy, arrow_style='-latex', **kwargs):
 
 def text(x, y, text, **kwargs):
 	return Text(x, y, text, **kwargs)
+
+
+def colormap(colormap):
+	gca().colormap = colormap
+
+
+def cyclelist(cyclelist):
+	if isinstance(cyclelist, str):
+		if cyclelist in cycle_lists:
+			# use predefined cycle list
+			gca().cycle_list = cycle_lists[cyclelist]
+		else:
+			# use cycle list predefined by PGFPlots
+			gca().cycle_list_name = cyclelist
+	else:
+		if isinstance(cyclelist, CycleList):
+			# use given cycle list
+			gca().cycle_list = cyclelist
+		else:
+			# create cycle list from given styles
+			gca().cycle_list = CycleList(cyclelist)
 
 
 def subplot(i, j, **kwargs):

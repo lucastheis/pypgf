@@ -1,4 +1,4 @@
-class RGB:
+class RGB(object):
 	"""
 	Generates RGB colors in PGF format.
 

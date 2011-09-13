@@ -102,7 +102,7 @@ class Plot(object):
 			self.yvalues = asarray(args[1]).flatten()
 
 		# line style
-		self.line_style = kwargs.get('line_style', 'solid')
+		self.line_style = kwargs.get('line_style', None)
 		self.line_width = kwargs.get('line_width', None)
 		self.opacity = kwargs.get('opacity', None)
 		self.color = kwargs.get('color', None)
@@ -110,7 +110,7 @@ class Plot(object):
 		self.fill = kwargs.get('fill', False)
 
 		# marker style
-		self.marker = kwargs.get('marker', 'no marker')
+		self.marker = kwargs.get('marker', None)
 		self.marker_size = kwargs.get('marker_size', None)
 		self.marker_edge_color = kwargs.get('marker_edge_color', None)
 		self.marker_face_color = kwargs.get('marker_face_color', None)
@@ -156,14 +156,21 @@ class Plot(object):
 		"""
 
 		options = []
-		marker_options = ['solid']
+		marker_options = []
 		error_options = []
+
+		if not self.axis.cycle_list and not self.axis.cycle_list_name:
+			# default settings
+			marker_options.append('solid')
+			
+			if not self.marker:
+				options.append('no marks')
+			elif not self.line_style:
+				options.append('only marks')
 
 		# basic properties
 		if self.line_style:
 			options.append(self.line_style)
-		else:
-			options.append('only marks')
 		if self.line_width:
 			options.append('line width={0}pt'.format(self.line_width))
 		if isinstance(self.color, RGB):
@@ -179,8 +186,6 @@ class Plot(object):
 			options.append('opacity={0}'.format(self.opacity))
 		if self.marker:
 			options.append('mark={0}'.format(replace(self.marker, '.', '*')))
-		else:
-			options.append('no marks')
 
 		# marker properties
 		if self.marker_edge_color:
@@ -233,7 +238,11 @@ class Plot(object):
 		if len(options_string) > 70:
 			options_string = '\n' + indent(',\n'.join(options))
 
-		tex = '\\addplot+[{0}] coordinates {{\n'.format(options_string)
+		if options_string:
+			tex = '\\addplot+[{0}] coordinates {{\n'.format(options_string)
+		else:
+			tex = '\\addplot coordinates {{\n'.format(options_string)
+
 		if len(self.xvalues_error) or len(self.yvalues_error):
 			x_error = self.xvalues_error if len(self.xvalues_error) \
 				else zeros(shape(self.yvalues_error))
