@@ -44,6 +44,9 @@ def escape(string):
 	if '$' not in string and r'\_' not in string:
 		string = str(string).replace('_', r'\_')
 
+	if r'\%' not in string:
+		string = str(string).replace('%', r'\%')
+
 	if ',' in string:
 		return '{' + str(string) + '}'
 

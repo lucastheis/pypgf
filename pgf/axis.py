@@ -218,7 +218,7 @@ class Axis(object):
 		for prop in properties:
 			if self.__dict__.get(prop, None) not in ['', None]:
 				options.append('{0}={{{1}}}'.format(
-					prop, str(self.__dict__[prop]).replace('_', '\\_')))
+					prop, escape(str(self.__dict__[prop]))))
 
 		# different properties
 		if self.legend:
