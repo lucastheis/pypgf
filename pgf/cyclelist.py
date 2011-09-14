@@ -72,5 +72,20 @@ cycle_lists = {
 		{'color': RGB(170, 250, 120), 'fill': RGB(170, 250, 120)},
 		{'color': RGB(  0,   0,   0), 'fill': RGB(  0,   0,   0)},
 		{'color': RGB(255, 200,   0), 'fill': RGB(255, 200,   0)},
-		])
+		]),
+	'fruity': CycleList([
+		{'color': 'orange!10!blue!80!black', 'fill': 'orange!10!blue!80!black'},
+		{'color': 'orange!5!red!90!black', 'fill': 'orange!5!red!90!black'},
+		{'color': 'orange!90!yellow!85!black', 'fill': 'orange!90!yellow!85!black'},
+		{'color': 'orange!30!green!90!black', 'fill': 'orange!45!green!80!white!90!black'},
+		{'color': 'black', 'fill': 'black'},
+		]),
+	'icy': CycleList([
+		{'color': 'green!20!blue!30!white', 'fill': 'green!20!blue!30!white'},
+		{'color': 'green!20!blue!30!white!80!black', 'fill': 'green!20!blue!30!white!80!black'},
+		{'color': 'green!20!blue!30!white!60!black', 'fill': 'green!20!blue!30!white!60!black'},
+		{'color': 'green!20!blue!30!white!40!black', 'fill': 'green!20!blue!30!white!40!black'},
+		{'color': 'green!20!blue!30!white!20!black', 'fill': 'green!20!blue!30!white!20!black'},
+		{'color': 'black', 'fill': 'black'},
+		]),
 }

@@ -325,10 +325,7 @@ def yticklabels(yticklabels):
 
 
 def axis(*args, **kwargs):
-	if len(args) < 1:
-		return gca()
-
-	if len(args) < 4:
+	if len(args) > 0:
 		if isinstance(args[0], str):
 			ax = gca()
 
@@ -358,6 +355,11 @@ def axis(*args, **kwargs):
 
 	if 'height' in kwargs:
 		gca().height = kwargs['height']
+
+	if 'pgf_options' in kwargs:
+		gca().pgf_options = kwargs['pgf_options']
+
+	return gca()
 
 
 def grid(value=None):
