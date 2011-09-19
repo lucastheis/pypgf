@@ -304,7 +304,7 @@ class Axis(object):
 		return tex
 
 
-	def limits():
+	def limits(self):
 		"""
 		@rtype: list
 		@return: [xmin, xmax, ymin, ymax]

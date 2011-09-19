@@ -205,7 +205,7 @@ def barh(*args, **kwargs):
 	args = [asmatrix(arg) for arg in args if not isinstance(arg, str)]
 
 	gca().xbar = True
-	gca().stacked = kwargs.get('stacked', True)
+	gca().stacked = kwargs.get('stacked', None)
 
 	if len(args) == 1:
 		args = [args[0], arange(1, args[0].shape[1] + 1)]
@@ -250,8 +250,10 @@ def hist(values, bins=10, format_string='', normed=False, density=False, **kwarg
 	hist = append(hist, hist[-1])
 
 	kwargs['const_plot'] = True
-	kwargs['fill'] = True
 	kwargs['closed'] = True
+
+	if not 'fill' in kwargs:
+		kwargs['fill'] = True
 
 	return plot(bin_edges, hist, format_string, **kwargs)
 

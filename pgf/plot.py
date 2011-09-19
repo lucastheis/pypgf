@@ -178,7 +178,7 @@ class Plot(object):
 		elif isinstance(self.color, str):
 			options.append(self.color)
 		if self.fill:
-			if isinstance(self.color, str) or isinstance(self.color, RGB):
+			if isinstance(self.fill, str) or isinstance(self.fill, RGB):
 				options.append('fill={0}'.format(self.fill))
 			else:
 				options.append('fill')
