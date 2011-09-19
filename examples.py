@@ -63,3 +63,14 @@ draw()
 
 # save LaTeX code
 save('examples.tex')
+
+
+
+figure()
+
+x, y = meshgrid(linspace(-2, 2, 20), linspace(-2, 2, 20))
+z = exp(-square(x) - square(y))
+
+surf(x, y, z)
+
+draw()
