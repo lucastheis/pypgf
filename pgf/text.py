@@ -1,4 +1,4 @@
-from axis import Axis
+from axes import Axes
 
 class Text(object):
 	def __init__(self, x, y, text, **kwargs):
@@ -17,8 +17,8 @@ class Text(object):
 			raise TypeError('pgf_options should be a list.')
 
 		# add text to axis
-		self.axis = kwargs.get('axis', Axis.gca())
-		self.axis.children.append(self)
+		self.axes = kwargs.get('axis', Axis.gca())
+		self.axes.children.append(self)
 
 
 	def render(self):

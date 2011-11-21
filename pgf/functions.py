@@ -1,5 +1,5 @@
-from axis import Axis
-from axisgrid import AxisGrid
+from axes import Axes
+from axesgrid import AxesGrid
 from cyclelist import CycleList, cycle_lists
 from figure import Figure
 from settings import Settings
@@ -23,7 +23,7 @@ def gca():
 	Returns currently active axis.
 	"""
 
-	return Axis.gca()
+	return Axes.gca()
 
 
 def draw():
@@ -173,18 +173,18 @@ def stem(*args, **kwargs):
 
 
 def semilogx(*args, **kwargs):
-	gca().axis_type = 'semilogxaxis'
+	gca().axes_type = 'semilogxaxis'
 	return plot(*args, **kwargs)
 
 
 
 def semilogy(*args, **kwargs):
-	gca().axis_type = 'semilogyaxis'
+	gca().axes_type = 'semilogyaxis'
 	return plot(*args, **kwargs)
 
 
 def loglog(*args, **kwargs):
-	gca().axis_type = 'loglogaxis'
+	gca().axes_type = 'loglogaxis'
 	return plot(*args, **kwargs)
 
 
@@ -427,16 +427,16 @@ def cyclelist(cyclelist):
 def subplot(i, j, **kwargs):
 	fig = gcf()
 
-	if not (fig.axes and isinstance(fig.axes[0], AxisGrid)):
+	if not (fig.axes and isinstance(fig.axes[0], AxesGrid)):
 		# create new axis grid
-		fig.axes = [AxisGrid(**kwargs)]
+		fig.axes = [AxesGrid(**kwargs)]
 
 	# get axis grid
 	grid = fig.axes[0]
 
 	if not (i, j) in grid.keys():
 		# create new axis in axis grid
-		grid[i, j] = Axis(fig=fig, **kwargs)
+		grid[i, j] = Axes(fig=fig, **kwargs)
 
 	# make axis active; TODO: find a less hacky solution
 	fig._ca = grid[i, j]

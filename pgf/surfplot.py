@@ -1,4 +1,4 @@
-from axis import Axis
+from axes import Axes
 from numpy import meshgrid, arange
 
 class SurfPlot(object):
@@ -26,8 +26,8 @@ class SurfPlot(object):
 			raise TypeError('pgf_options should be a list.')
 
 		# add plot to axis
-		self.axis = kwargs.get('axis', Axis.gca())
-		self.axis.children.append(self)
+		self.axes = kwargs.get('axis', Axes.gca())
+		self.axes.children.append(self)
 
 
 	def render(self):

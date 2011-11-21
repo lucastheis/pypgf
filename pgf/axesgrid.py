@@ -1,17 +1,17 @@
-from axis import Axis
+from axes import Axes
 from figure import Figure
 from numpy import max, sum, cumsum, asarray
 
-class AxisGrid(object):
+class AxesGrid(object):
 	"""
 	@type figure: L{Figure}
-	@ivar figure: figure controlled by this AxisGrid instance
+	@ivar figure: figure controlled by this AxesGrid instance
 
 	@type width: float (read-only)
-	@ivar width: axis grid width in cm
+	@ivar width: width of grid in cm
 	
 	@type height: float (read-only)
-	@ivar height: axis grid width in cm
+	@ivar height: height of grid in cm
 	"""
 
 	def __init__(self, fig=None, *args, **kwargs):

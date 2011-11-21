@@ -5,9 +5,13 @@ from settings import Settings
 from numpy.random import randint
 
 class Figure(object):
-	# figures, currently active figure and some identifier
+	# references to all figures
 	_figures = {}
+
+	# currently active figure
 	_cf = None
+
+	# identifier for above set of figures
 	_session = randint(1E8)
 
 	@staticmethod
@@ -58,7 +62,7 @@ class Figure(object):
 			# space around axes
 			self.margin = kwargs.get('margin', 2.)
 
-			# currently active axis
+			# currently active axes
 			self._ca = None
 
 			# make sure figure will not be initialized twice

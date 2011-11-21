@@ -1,5 +1,5 @@
 from numpy import asarray, arange, min, max, shape, zeros
-from axis import Axis
+from axes import Axes
 from string import replace
 from re import match
 from rgb import RGB
@@ -9,7 +9,7 @@ class Plot(object):
 	"""
 	Represents line plots.
 
-	@type axis: L{Axis}
+	@type axis: L{Axes}
 	@ivar axis: reference to assigned axis
 
 	@type xvalues: array_like
@@ -142,9 +142,9 @@ class Plot(object):
 		if not isinstance(self.pgf_options, list):
 			raise TypeError('pgf_options should be a list.')
 
-		# add plot to axis
-		self.axis = kwargs.get('axis', Axis.gca())
-		self.axis.children.append(self)
+		# add plot to axes
+		self.axes = kwargs.get('axis', Axes.gca())
+		self.axes.children.append(self)
 
 
 	def render(self):
@@ -159,7 +159,7 @@ class Plot(object):
 		marker_options = []
 		error_options = []
 
-		if not self.axis.cycle_list and not self.axis.cycle_list_name:
+		if not self.axes.cycle_list and not self.axes.cycle_list_name:
 			# default settings
 			marker_options.append('solid')
 			
