@@ -36,6 +36,9 @@ class Axes(object):
 	@type ymax: float/None
 	@ivar ymax: upper limit of y-axis
 
+	@type enlargelimits: boolean/None
+	@ivar enlargelimits: add a margin between plots and axes
+
 	@type xtick: list/None
 	@ivar xtick: location of ticks at x-axis
 
@@ -142,6 +145,9 @@ class Axes(object):
 		self.ymin = kwargs.get('ymin', None)
 		self.ymax = kwargs.get('ymax', None)
 
+		# if true, put a margin between plots and axes
+		self.enlargelimits = kwargs.get('enlargelimits', None)
+
 		# tick positions
 		self.xtick = kwargs.get('xtick', None)
 		self.ytick = kwargs.get('ytick', None)
@@ -219,6 +225,10 @@ class Axes(object):
 			if self.__dict__.get(prop, None) not in ['', None]:
 				options.append('{0}={{{1}}}'.format(
 					prop, escape(str(self.__dict__[prop]))))
+
+		if self.enlargelimits is not None:
+			options.append('enlargelimits={0}'.format(
+				'true' if self.enlargelimits else 'false'))
 
 		# different properties
 		if self.legend:

@@ -89,3 +89,11 @@ class Image(object):
 
 	def limits(self):
 		return [0, self.image.size[0], 0, self.image.size[1]]
+
+
+	def  width(self):
+		return self.image.size[0]
+
+
+	def  height(self):
+		return self.image.size[1]

@@ -444,6 +444,6 @@ def subplot(i, j, **kwargs):
 
 
 def imshow(image, **kwargs):
-	Image(image, **kwargs)
+	img = Image(image, **kwargs)
 	axis('tight')
-	axis('equal')
+	return img
