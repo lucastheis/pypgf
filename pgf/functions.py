@@ -10,6 +10,7 @@ from arrow import Arrow
 from text import Text
 from numpy import asmatrix, inf, min, copy, arange, repeat, isscalar, sum
 from numpy import histogram, append
+from image import Image
 
 def gcf():
 	"""
@@ -440,3 +441,9 @@ def subplot(i, j, **kwargs):
 
 	# make axis active; TODO: find a less hacky solution
 	fig._ca = grid[i, j]
+
+
+def imshow(image, **kwargs):
+	Image(image, **kwargs)
+	axis('tight')
+	axis('equal')

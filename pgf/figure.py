@@ -1,5 +1,4 @@
-from os import system
-from os.path import splitext
+from os import path, system, mkdir
 from utils import min_free, indent
 from settings import Settings
 from numpy.random import randint
@@ -131,8 +130,10 @@ class Figure(object):
 		@return: path to PDF file
 		"""
 
-		tex_file = Settings.tmp_dir + 'pgf_{0}_{1}.tex'.format(Figure._session, self._idx)
-		pdf_file = Settings.tmp_dir + 'pgf_{0}_{1}.pdf'.format(Figure._session, self._idx)
+		self.save_images(Settings.tmp_dir)
+
+		tex_file = path.join(Settings.tmp_dir, 'pgf_{0}_{1}.tex'.format(Figure._session, self._idx))
+		pdf_file = path.join(Settings.tmp_dir, 'pgf_{0}_{1}.pdf'.format(Figure._session, self._idx))
 
 		command = Settings.pdf_compile.format('-output-directory {0} {1}')
 		command = command.format(Settings.tmp_dir, tex_file)
@@ -142,7 +143,7 @@ class Figure(object):
 			handle.write(self.render())
 
 		# compile
-		if system(command):
+		if system('cd "{0}" && {1}'.format(Settings.tmp_dir, command)):
 			raise RuntimeError('Compiling TeX source file to PDF failed.')
 
 		return pdf_file
@@ -169,8 +170,9 @@ class Figure(object):
 		@param format: currently either 'pdf' or 'tex'
 		"""
 
+		# figure out which file format to use
 		if format is None:
-			format = splitext(filename)[1][1:]
+			format = path.splitext(filename)[1][1:]
 		format = format.lower()
 
 		if format not in ['pdf', 'tex']:
@@ -181,6 +183,23 @@ class Figure(object):
 			system('cp {0} {1}'.format(self.compile(), filename))
 
 		elif format == 'tex':
+			self.save_images(path.dirname(filename))
+
 			# save TeX file
 			with open(filename, 'w') as handle:
 				handle.write(self.render())
+
+
+
+	def save_images(self, filepath):
+		# make sure directory for images exists
+		filepath = path.join(filepath, Settings.image_folder)
+		if not path.exists(filepath):
+			mkdir(filepath)
+
+		# save figures
+		from image import Image
+		for ax in self.axes:
+			for child in ax.children:
+				if isinstance(child, Image):
+					child.save(filepath)
