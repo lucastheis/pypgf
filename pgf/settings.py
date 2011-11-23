@@ -1,7 +1,18 @@
+import os
+
 class Settings(object):
+	# where to store and compile *.tex files
 	tmp_dir = '/tmp/'
+
+	# how to compile LaTeX code into PDFs
 	pdf_compile = 'pdflatex -halt-on-error -interaction batchmode {0} > /dev/null'
-	pdf_view = 'open {0}'
+
+	# how to open and show PDFs
+	pdf_view_mac = 'open {0}'
+	pdf_view_linux = 'evince --preview {0} &'
+	pdf_view = pdf_view_mac if os.uname()[0] in ['Darwin'] \
+		else pdf_view_linux
+
 	preamble = \
 		'\\usepackage[utf8]{inputenc}\n' + \
 		'\\usepackage{amsmath}\n' + \
