@@ -2,12 +2,12 @@ from utils import indent, escape
 from figure import Figure
 from numpy import min, max, inf
 
-class Axis(object):
+class Axes(object):
 	"""
-	Manages axis properties.
+	Manages axes properties.
 
 	@type at: tuple/None
-	@ivar at: axis position
+	@ivar at: position of axes within figure
 
 	@type width: float
 	@ivar width: axis width in cm
@@ -16,31 +16,40 @@ class Axis(object):
 	@ivar height: axis height in cm
 
 	@type title: string
-	@ivar title: title above axis
+	@ivar title: title above axes
 
 	@type xlabel: string
-	@ivar xlabel: label at the x-axis
+	@ivar xlabel: label next to x-axis
 
 	@type ylabel: string
-	@ivar ylabel: label at the y-axis
+	@ivar ylabel: label next to y-axis
 
 	@type xmin: float/None
-	@ivar xmin: minimum of x-axis
+	@ivar xmin: lower limit of x-axis
 
 	@type xmax: float/None
-	@ivar xmax: maximum of x-axis
+	@ivar xmax: upper limit of x-axis
 
 	@type ymin: float/None
-	@ivar ymin: minimum of y-axis
+	@ivar ymin: lower limit of y-axis
 
 	@type ymax: float/None
-	@ivar ymax: maximum of y-axis
+	@ivar ymax: upper limit of y-axis
+
+	@type enlargelimits: boolean/None
+	@ivar enlargelimits: add a margin between plots and axes
 
 	@type xtick: list/None
 	@ivar xtick: location of ticks at x-axis
 
 	@type ytick: list/None
 	@ivar ytick: location of ticks at y-axis
+
+	@type xtick_align: string/None
+	@ivar xtick_align: position ticks 'inside' or 'outside' of axes
+
+	@type ytick_align: string/None
+	@ivar ytick_align: position ticks 'inside' or 'outside' of axes
 
 	@type xticklabels: list/None
 	@ivar xticklabels: labeling of ticks
@@ -49,13 +58,13 @@ class Axis(object):
 	@ivar yticklabels: labeling of ticks
 
 	@type equal: boolean/None
-	@ivar equal: forces units on all axis to have equal lengths
+	@ivar equal: forces units on all axes to have equal lengths
 
 	@type grid: boolean/None
 	@ivar grid: enables major grid
 
-	@type axis_type: string
-	@ivar axis_type: 'axis', 'semilogxaxis', 'semilogyaxis' or 'loglogaxis'
+	@type axes_type: string
+	@ivar axes_type: 'axis', 'semilogxaxis', 'semilogyaxis' or 'loglogaxis'
 
 	@type axis_x_line: string/None
 	@ivar axis_x_line: x-axis position, e.g. 'middle', 'top', 'bottom', 'none'
@@ -91,26 +100,26 @@ class Axis(object):
 	@ivar pgf_options: custom PGFPlots axis options
 
 	@type children: list
-	@ivar children: list of plots contained in this axis
+	@ivar children: list of plots belonging to this axes object
 	"""
 
 	@staticmethod
 	def gca():
 		"""
-		Returns the currently active axis.
+		Returns the currently active axes object.
 
-		@rtype: Axis
-		@return: the currently active axis
+		@rtype: Axes
+		@return: the currently active set of axes
 		"""
 
 		if not Figure.gcf()._ca:
-			Axis()
+			Axes()
 		return Figure.gcf()._ca
 
 
 	def __init__(self, fig=None, *args, **kwargs):
 		"""
-		Initializes axis properties.
+		Initializes axes properties.
 		"""
 
 		# parent figure
@@ -126,32 +135,39 @@ class Axis(object):
 		self.width = kwargs.get('width', 8.)
 		self.height = kwargs.get('height', 7.)
 
-		# plots contained in this axis
+		# plots belonging to these axes
 		self.children = []
 
-		# title above this axis
+		# title above axes
 		self.title = kwargs.get('title', '')
 
-		# axis labels
+		# axes labels
 		self.xlabel = kwargs.get('xlabel', '')
 		self.ylabel = kwargs.get('ylabel', '')
 
-		# axis boundaries
+		# axes limits
 		self.xmin = kwargs.get('xmin', None)
 		self.xmax = kwargs.get('xmax', None)
 		self.ymin = kwargs.get('ymin', None)
 		self.ymax = kwargs.get('ymax', None)
 
+		# if true, put a margin between plots and axes
+		self.enlargelimits = kwargs.get('enlargelimits', None)
+
 		# tick positions
 		self.xtick = kwargs.get('xtick', None)
 		self.ytick = kwargs.get('ytick', None)
+
+		# tick positions
+		self.xtick_align = kwargs.get('xtick_align', None)
+		self.ytick_align = kwargs.get('ytick_align', None)
 
 		# tick labels
 		self.xticklabels = kwargs.get('xticklabels', None)
 		self.yticklabels = kwargs.get('yticklabels', None)
 
-		# linear or logarithmic axis
-		self.axis_type = kwargs.get('axis_type', 'axis')
+		# linear or logarithmic axes
+		self.axes_type = kwargs.get('axes_type', 'axis')
 
 		# axis positions
 		self.axis_x_line = kwargs.get('axis_x_line', None)
@@ -175,15 +191,15 @@ class Axis(object):
 		# grid lines
 		self.grid = kwargs.get('grid', None)
 
-		# custom axis options
+		# custom axes properties
 		self.pgf_options = kwargs.get('pgf_options', [])
 
 		if not self.figure:
 			self.figure = Figure.gcf()
 
-		# add axis to figure (if figure is not controlled by axis grid)
-		from axisgrid import AxisGrid
-		if not (self.figure.axes and isinstance(self.figure.axes[0], AxisGrid)):
+		# add axes to figure (if figure is not controlled by AxesGrid)
+		from axesgrid import AxesGrid
+		if not (self.figure.axes and isinstance(self.figure.axes[0], AxesGrid)):
 			self.figure.axes.append(self)
 
 		# make this axis active
@@ -206,6 +222,7 @@ class Axis(object):
 		if self.at is not None:
 			options.append('at={{({0}cm, {1}cm)}}'.format(self.at[0], self.at[1]))
 
+		# automatically handled properties
 		properties = [
 			'title',
 			'xmin',
@@ -219,6 +236,10 @@ class Axis(object):
 			if self.__dict__.get(prop, None) not in ['', None]:
 				options.append('{0}={{{1}}}'.format(
 					prop, escape(str(self.__dict__[prop]))))
+
+		if self.enlargelimits is not None:
+			options.append('enlargelimits={0}'.format(
+				'true' if self.enlargelimits else 'false'))
 
 		# different properties
 		if self.legend:
@@ -255,6 +276,10 @@ class Axis(object):
 		if self.yticklabels is not None:
 			options.append('yticklabels={{{0}}}'.format(
 				','.join(escape(self.yticklabels))))
+		if self.xtick_align is not None:
+			options.append('xtick align={{{0}}}'.format(self.xtick_align))
+		if self.ytick_align is not None:
+			options.append('ytick align={{{0}}}'.format(self.ytick_align))
 
 		# axis positions
 		if self.axis_x_line:
@@ -295,11 +320,11 @@ class Axis(object):
 		# custom options
 		options.extend(self.pgf_options)
 
-		tex = '\\begin{{{0}}}[\n'.format(self.axis_type)
+		tex = '\\begin{{{0}}}[\n'.format(self.axes_type)
 		tex += indent(',\n'.join(options)) + ']\n'
 		for child in self.children:
 			tex += indent(child.render())
-		tex += '\\end{{{0}}}\n'.format(self.axis_type)
+		tex += '\\end{{{0}}}\n'.format(self.axes_type)
 
 		return tex
 

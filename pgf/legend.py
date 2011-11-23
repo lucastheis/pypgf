@@ -1,5 +1,5 @@
 from utils import indent, escape
-from axis import Axis
+from axes import Axes
 from numpy import round
 
 class Legend(object):
@@ -14,8 +14,8 @@ class Legend(object):
 		self.align = kwargs.get('align', 'left')
 
 		# assign legend to axis
-		self.axis = kwargs.get('axis', Axis.gca())
-		self.axis.legend = self
+		self.axes = kwargs.get('axis', Axes.gca())
+		self.axes.legend = self
 
 
 
@@ -32,11 +32,11 @@ class Legend(object):
 
 			# position legend according to location hint
 			if 'north' in loc:
-				bottom = 1. - 0.1 / self.axis.height
+				bottom = 1. - 0.1 / self.axes.height
 				anchor.append('north')
 
 			elif 'south' in loc:
-				bottom = 0. + 0.1 / self.axis.height
+				bottom = 0. + 0.1 / self.axes.height
 				anchor.append('south')
 
 			if 'outer' in loc and ('north' in loc or 'south' in loc):
@@ -44,18 +44,18 @@ class Legend(object):
 
 			if 'west' in loc:
 				if 'outer' in self.location.lower():
-					left = 0. - 0.1 / self.axis.width
+					left = 0. - 0.1 / self.axes.width
 					anchor.append('east')
 				else:
-					left = 0. + 0.1 / self.axis.width
+					left = 0. + 0.1 / self.axes.width
 					anchor.append('west')
 
 			elif 'east' in loc:
 				if 'outer' in loc:
-					left = 1. + 0.1 / self.axis.width
+					left = 1. + 0.1 / self.axes.width
 					anchor.append('west')
 				else:
-					left = 1. - 0.1 / self.axis.width
+					left = 1. - 0.1 / self.axes.width
 					anchor.append('east')
 
 			left, bottom = round(left, 4), round(bottom, 4)
