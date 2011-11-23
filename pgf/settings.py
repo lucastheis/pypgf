@@ -13,6 +13,7 @@ class Settings(object):
 	pdf_view = pdf_view_mac if os.uname()[0] in ['Darwin'] \
 		else pdf_view_linux
 
+	# will be included in header of LaTeX file
 	preamble = \
 		'\\usepackage[utf8]{inputenc}\n' + \
 		'\\usepackage{amsmath}\n' + \
