@@ -445,5 +445,9 @@ def subplot(i, j, **kwargs):
 
 def imshow(image, **kwargs):
 	img = Image(image, **kwargs)
+	gca().width = 2.54 / 72. * img.width()
+	gca().height = 2.54 / 72. * img.height()
+	gca().xtick_align = 'outside'
+	gca().ytick_align = 'outside'
 	axis('tight')
 	return img

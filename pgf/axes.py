@@ -45,6 +45,12 @@ class Axes(object):
 	@type ytick: list/None
 	@ivar ytick: location of ticks at y-axis
 
+	@type xtick_align: string/None
+	@ivar xtick_align: position ticks 'inside' or 'outside' of axes
+
+	@type ytick_align: string/None
+	@ivar ytick_align: position ticks 'inside' or 'outside' of axes
+
 	@type xticklabels: list/None
 	@ivar xticklabels: labeling of ticks
 
@@ -152,6 +158,10 @@ class Axes(object):
 		self.xtick = kwargs.get('xtick', None)
 		self.ytick = kwargs.get('ytick', None)
 
+		# tick positions
+		self.xtick_align = kwargs.get('xtick_align', None)
+		self.ytick_align = kwargs.get('ytick_align', None)
+
 		# tick labels
 		self.xticklabels = kwargs.get('xticklabels', None)
 		self.yticklabels = kwargs.get('yticklabels', None)
@@ -212,6 +222,7 @@ class Axes(object):
 		if self.at is not None:
 			options.append('at={{({0}cm, {1}cm)}}'.format(self.at[0], self.at[1]))
 
+		# automatically handled properties
 		properties = [
 			'title',
 			'xmin',
@@ -265,6 +276,10 @@ class Axes(object):
 		if self.yticklabels is not None:
 			options.append('yticklabels={{{0}}}'.format(
 				','.join(escape(self.yticklabels))))
+		if self.xtick_align is not None:
+			options.append('xtick align={{{0}}}'.format(self.xtick_align))
+		if self.ytick_align is not None:
+			options.append('ytick align={{{0}}}'.format(self.ytick_align))
 
 		# axis positions
 		if self.axis_x_line:
