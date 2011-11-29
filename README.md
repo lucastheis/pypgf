@@ -2,7 +2,7 @@ pypgf
 =====
 
 A Python interface for creating LaTeX plots with Christian Feuersänger's
-[PGFPlots][1] and Till Tantau's [PGF/TikZ][2] package. The interface is still at
+[PGFPlots][1] and Till Tantau's [PGF/TikZ][2] package. This package is still at
 a very rudimentary stage, might change heavily in the future and lacks
 documentation. Right now, only Mac and Linux are supported.
 

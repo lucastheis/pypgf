@@ -199,7 +199,16 @@ class Figure(object):
 
 		# save figures
 		from image import Image
+		from axesgrid import AxesGrid
+		from axes import Axes
 		for ax in self.axes:
-			for child in ax.children:
-				if isinstance(child, Image):
-					child.save(filepath)
+			if isinstance(ax, AxesGrid):
+				for _, axs in ax.grid.iteritems():
+					for child in axs.children:
+						if isinstance(child, Image):
+							child.save(filepath)
+
+			elif isinstance(ax, Axes):
+				for child in ax.children:
+					if isinstance(child, Image):
+						child.save(filepath)
