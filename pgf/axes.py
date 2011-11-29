@@ -45,6 +45,12 @@ class Axes(object):
 	@type ytick: list/None
 	@ivar ytick: location of ticks at y-axis
 
+	@type xticklabel_precision: integer/None
+	@ivar xticklabel_precision: precision of x-axis tick labels
+
+	@type yticklabel_precision: integer/None
+	@ivar yticklabel_precision: precision of y-axis tick labels
+
 	@type xtick_align: string/None
 	@ivar xtick_align: position ticks 'inside' or 'outside' of axes
 
@@ -157,6 +163,10 @@ class Axes(object):
 		# tick positions
 		self.xtick = kwargs.get('xtick', None)
 		self.ytick = kwargs.get('ytick', None)
+
+		# tick label precisions
+		self.xticklabel_precision = kwargs.get('xticklabel_precision', 4)
+		self.yticklabel_precision = kwargs.get('yticklabel_precision', 4)
 
 		# tick positions
 		self.xtick_align = kwargs.get('xtick_align', None)
@@ -280,6 +290,14 @@ class Axes(object):
 			options.append('xtick align={{{0}}}'.format(self.xtick_align))
 		if self.ytick_align is not None:
 			options.append('ytick align={{{0}}}'.format(self.ytick_align))
+		if self.xticklabel_precision is not None:
+			options.append(
+				r'xticklabel={{\pgfmathprintnumber[precision={0}]{{\tick}}}}'.format(
+					self.xticklabel_precision))
+		if self.yticklabel_precision is not None:
+			options.append(
+				r'yticklabel={{\pgfmathprintnumber[precision={0}]{{\tick}}}}'.format(
+					self.yticklabel_precision))
 
 		# axis positions
 		if self.axis_x_line:
@@ -331,6 +349,9 @@ class Axes(object):
 
 	def limits(self):
 		"""
+		Computes the minimum and maximum values over all data points contained in
+		these axes.
+
 		@rtype: list
 		@return: [xmin, xmax, ymin, ymax]
 		"""
