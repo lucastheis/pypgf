@@ -290,11 +290,11 @@ class Axes(object):
 			options.append('xtick align={{{0}}}'.format(self.xtick_align))
 		if self.ytick_align is not None:
 			options.append('ytick align={{{0}}}'.format(self.ytick_align))
-		if self.xticklabel_precision is not None:
+		if self.xticklabel_precision is not None and self.axes_type in ['axis', 'semilogyaxis']:
 			options.append(
 				r'xticklabel={{\pgfmathprintnumber[precision={0}]{{\tick}}}}'.format(
 					self.xticklabel_precision))
-		if self.yticklabel_precision is not None:
+		if self.yticklabel_precision is not None and self.axes_type in ['axis', 'semilogxaxis']:
 			options.append(
 				r'yticklabel={{\pgfmathprintnumber[precision={0}]{{\tick}}}}'.format(
 					self.yticklabel_precision))
@@ -368,3 +368,8 @@ class Axes(object):
 			_ymax = max([_ymax, ymax])
 
 		return [_xmin, _xmax, _ymin, _ymax]
+
+
+
+	def __getitem__(self, key):
+		return self.limits()[key]

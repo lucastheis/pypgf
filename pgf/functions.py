@@ -243,7 +243,11 @@ def hist(values, bins=10, format_string='', normed=False, density=False, **kwarg
 			format_string = bins
 		bins = 10
 
-	hist, bin_edges = histogram(values, bins, density=density)
+	try:
+		hist, bin_edges = histogram(values, bins, density=density)
+	except:
+		# use deprecated keyword with older versions of NumPy
+		hist, bin_edges = histogram(values, bins, normed=density)
 
 	if normed:
 		hist = hist / sum(hist, dtype=float)
