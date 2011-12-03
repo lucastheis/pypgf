@@ -5,6 +5,7 @@ from figure import Figure
 from settings import Settings
 from legend import Legend
 from plot import Plot
+from boxplot import BoxPlot
 from surfplot import SurfPlot
 from arrow import Arrow
 from text import Text
@@ -290,6 +291,10 @@ def errorbar(*args, **kwargs):
 	return plot(format_string, *args, **kwargs)
 
 
+def boxplot(*args, **kwargs):
+	return BoxPlot(*args, **kwargs)
+
+
 def surf(*args, **kwargs):
 	return SurfPlot(*args, **kwargs)
 
@@ -386,7 +391,7 @@ def legend(*args, **kwargs):
 	return Legend(*args, **kwargs)
 
 
-def save(filename, format=None):
+def savefig(filename, format=None):
 	gcf().save(filename, format)
 
 

@@ -227,6 +227,7 @@ class Plot(object):
 		elif self.xcomb:
 			options.append('xcomb')
 
+		# can turn off linear interpolation
 		if self.const_plot:
 			options.append('const plot')
 

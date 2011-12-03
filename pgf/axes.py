@@ -1,6 +1,6 @@
 from utils import indent, escape
 from figure import Figure
-from numpy import min, max, inf
+from numpy import min, max, inf, isreal
 
 class Axes(object):
 	"""
@@ -244,8 +244,11 @@ class Axes(object):
 
 		for prop in properties:
 			if self.__dict__.get(prop, None) not in ['', None]:
-				options.append('{0}={{{1}}}'.format(
-					prop, escape(str(self.__dict__[prop]))))
+				if isreal(self.__dict__[prop]):
+					options.append('{0}={1}'.format(prop, self.__dict__[prop]))
+				else:
+					options.append('{0}={{{1}}}'.format(
+						prop, escape(str(self.__dict__[prop]))))
 
 		if self.enlargelimits is not None:
 			options.append('enlargelimits={0}'.format(
@@ -326,6 +329,26 @@ class Axes(object):
 			options.append('area legend')
 		if self.bar_width:
 			options.append('bar width={0}cm'.format(self.bar_width))
+
+		# box plots
+		from boxplot import BoxPlot
+
+		boxplots = [child for child in self.children if isinstance(child, BoxPlot)]
+
+		if boxplots:
+			limits = [plot.limits() for plot in boxplots]
+			xmin, _, ymin, _ = min(limits, 0)
+			_, xmax, _, ymax = max(limits, 0)
+
+			# axis limits necessary, otherwise boxplots not shown
+			if self.xmin is None:
+				options.append('xmin={0}'.format(xmin))
+			if self.xmax is None:
+				options.append('xmax={0}'.format(xmax))
+			if self.ymin is None:
+				options.append('ymin={0}'.format(ymin))
+			if self.ymax is None:
+				options.append('ymax={0}'.format(ymax))
 
 		# colors and line styles
 		if self.colormap:
