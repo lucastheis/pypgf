@@ -96,6 +96,9 @@ class Axes(object):
 	@type colormap: string/None
 	@ivar colormap: colormap used by some plots, e.g. 'hot', 'cool', 'bluered'
 
+	@type hide_axis: boolean
+	@ivar hide_axis: if true, don't show any axes
+
 	@type cycle_list: CycleList/list/None
 	@ivar cycle_list: a list of styles used for plots
 
@@ -201,6 +204,9 @@ class Axes(object):
 		# grid lines
 		self.grid = kwargs.get('grid', None)
 
+		# axis on/off
+		self.hide_axis = kwargs.get('hide_axis', False)
+
 		# custom axes properties
 		self.pgf_options = kwargs.get('pgf_options', [])
 
@@ -280,12 +286,6 @@ class Axes(object):
 		elif self.ytick is not None:
 			options.append('ytick=\empty')
 			options.append('ytick scale label code/.code={}')
-		if self.xticklabels is not None:
-			options.append('xticklabels={{{0}}}'.format(
-				','.join(escape(self.xticklabels))))
-		if self.yticklabels is not None:
-			options.append('yticklabels={{{0}}}'.format(
-				','.join(escape(self.yticklabels))))
 		if self.xtick_align is not None:
 			options.append('xtick align={{{0}}}'.format(self.xtick_align))
 		if self.ytick_align is not None:
@@ -298,6 +298,12 @@ class Axes(object):
 			options.append(
 				r'yticklabel={{\pgfmathprintnumber[precision={0}]{{\tick}}}}'.format(
 					self.yticklabel_precision))
+		if self.yticklabels is not None:
+			options.append('yticklabels={{{0}}}'.format(
+				','.join(escape(self.yticklabels))))
+		if self.xticklabels is not None:
+			options.append('xticklabels={{{0}}}'.format(
+				','.join(escape(self.xticklabels))))
 
 		# axis positions
 		if self.axis_x_line:
@@ -334,6 +340,10 @@ class Axes(object):
 			options.append(self.cycle_list.render())
 		elif self.cycle_list_name:
 			options.append('cycle list name={0}'.format(self.cycle_list_name))
+
+		# axis off/on
+		if self.hide_axis:
+			options.append('hide axis')
 
 		# custom options
 		options.extend(self.pgf_options)

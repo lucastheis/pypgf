@@ -336,7 +336,13 @@ def axis(*args, **kwargs):
 		if isinstance(args[0], str):
 			ax = gca()
 
-			if args[0] == 'equal':
+			if args[0] == 'off':
+				ax.hide_axis = True
+
+			elif args[0] == 'on':
+				ax.hide_axis = False
+
+			elif args[0] == 'equal':
 				ax.equal = True
 
 			elif args[0] == 'square':
