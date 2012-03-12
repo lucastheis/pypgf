@@ -54,6 +54,16 @@ class Image(object):
 
 			self.image = PILImage.fromarray(image)
 
+		# specify pixel coordinates 
+		self.xmin = kwargs.get('xmin', 0)
+		self.xmax = kwargs.get('xmax', self.image.size[0])
+		self.ymin = kwargs.get('ymin', 0)
+		self.ymax = kwargs.get('ymax', self.image.size[1])
+
+		if 'limits' in kwargs:
+			self.xmin, self.xmax, \
+			self.ymin, self.ymax = kwargs['limits']
+
 		# add image to axis
 		self.axes = kwargs.get('axis', Axes.gca())
 		self.axes.children.append(self)
@@ -87,8 +97,11 @@ class Image(object):
 		return tex
 
 
-	def limits(self):
-		return [0, self.image.size[0], 0, self.image.size[1]]
+	def limits(self, limits=None):
+		if limits is not None:
+			self.xmin, self.xmax, \
+			self.ymin, self.ymax = limits
+		return [self.xmin, self.xmax, self.ymin, self.ymax]
 
 
 	def  width(self):

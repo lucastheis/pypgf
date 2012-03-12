@@ -171,7 +171,7 @@ class Plot(object):
 		# basic properties
 		if self.line_style:
 			options.append(self.line_style)
-		if self.line_width:
+		if self.line_width is not None:
 			options.append('line width={0}pt'.format(self.line_width))
 		if isinstance(self.color, RGB):
 			options.append('color={0}'.format(self.color))
@@ -182,7 +182,7 @@ class Plot(object):
 				options.append('fill={0}'.format(self.fill))
 			else:
 				options.append('fill')
-		if self.opacity:
+		if self.opacity is not None:
 			options.append('opacity={0}'.format(self.opacity))
 		if self.marker:
 			options.append('mark={0}'.format(replace(self.marker, '.', '*')))
