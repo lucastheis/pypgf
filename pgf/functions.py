@@ -9,7 +9,7 @@ from boxplot import BoxPlot
 from surfplot import SurfPlot
 from arrow import Arrow
 from text import Text
-from numpy import asmatrix, inf, min, copy, arange, repeat, isscalar, sum
+from numpy import asmatrix, inf, min, copy, arange, repeat, isscalar, sum, ndarray
 from numpy import histogram, append
 from image import Image
 
@@ -215,7 +215,7 @@ def barh(*args, **kwargs):
 	return plot(format_string, *args, **kwargs)
 
 
-def hist(values, bins=10, format_string='', normed=False, density=False, **kwargs):
+def hist(values, bins=10, format_string='', range=None, normed=False, density=False, **kwargs):
 	"""
 	Computes and plots a histogram of the data provided.
 
@@ -228,6 +228,9 @@ def hist(values, bins=10, format_string='', normed=False, density=False, **kwarg
 	@type  bins: int
 	@param bins: number of bins
 
+	@type  range: tuple
+	@param range: lower and upper range of bins
+
 	@type  normed: boolean
 	@param normed: if true, the histogram is normalized to sum to 1
 
@@ -238,17 +241,24 @@ def hist(values, bins=10, format_string='', normed=False, density=False, **kwarg
 	@return: a reference to the plot
 	"""
 
+	# correct arguments if necessary
 	if isinstance(bins, str):
-		# correct arguments
 		if not format_string:
 			format_string = bins
 		bins = 10
 
+	if isinstance(format_string, tuple) or \
+	   isinstance(format_string, list) or \
+	   isinstance(format_string, ndarray):
+		if range is None:
+			range = format_string
+		format_string = ''
+
 	try:
-		hist, bin_edges = histogram(values, bins, density=density)
+		hist, bin_edges = histogram(values, bins, range, density=density)
 	except:
 		# use deprecated keyword with older versions of NumPy
-		hist, bin_edges = histogram(values, bins, normed=density)
+		hist, bin_edges = histogram(values, bins, range, normed=density)
 
 	if normed:
 		hist = hist / sum(hist, dtype=float)
@@ -411,8 +421,36 @@ def box(value=None):
 		gca().axis_y_line = None
 
 
-def arrow(x, y, dx, dy, arrow_style='-latex', **kwargs):
-	return Arrow(x, y, dx, dy, arrow_style=arrow_style, **kwargs)
+def arrow(x, y, dx, dy, format_string='', **kwargs):
+	if 'color' not in kwargs:
+		if 'r' in format_string:
+			kwargs['color'] = 'red'
+		elif 'g' in format_string:
+			kwargs['color'] = 'green'
+		elif 'b' in format_string:
+			kwargs['color'] = 'blue'
+		elif 'c' in format_string:
+			kwargs['color'] = 'cyan'
+		elif 'm' in format_string:
+			kwargs['color'] = 'magenta'
+		elif 'y' in format_string:
+			kwargs['color'] = 'yellow'
+		elif 'k' in format_string:
+			kwargs['color'] = 'black'
+		elif 'w' in format_string:
+			kwargs['color'] = 'white'
+
+	if 'line_style' not in kwargs:
+		if '---' in format_string:
+			kwargs['line_style'] = 'densely dashed'
+		elif '--' in format_string:
+			kwargs['line_style'] = 'dashed'
+		elif '-' in format_string:
+			kwargs['line_style'] = 'solid'
+		elif ':' in format_string:
+			kwargs['line_style'] = 'densely dotted'
+
+	return Arrow(x, y, dx, dy, **kwargs)
 
 
 def text(x, y, text, **kwargs):

@@ -11,6 +11,7 @@ class Arrow(object):
 		self.color = kwargs.get('color', None)
 		self.arrow_style = kwargs.get('arrow_style', '-latex')
 		self.line_style = kwargs.get('line_style', None)
+		self.line_width = kwargs.get('line_width', None)
 
 		# custom plot options
 		self.pgf_options = kwargs.get('pgf_options', [])
@@ -29,6 +30,8 @@ class Arrow(object):
 
 		if self.line_style:
 			options.append(self.line_style)
+		if self.line_width is not None:
+			options.append('line width={0}'.format(self.line_width))
 		if self.color:
 			options.append('color={0}'.format(self.color))
 

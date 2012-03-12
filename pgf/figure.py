@@ -4,6 +4,16 @@ from settings import Settings
 from numpy.random import randint
 
 class Figure(object):
+	"""
+	Represents and renders figures.
+
+	@type margin: float
+	@ivar margin: space around axis
+
+	@type sans_serif: boolean
+	@ivar sans_serif: if true, use Helvetica instead of serif Computer Modern
+	"""
+
 	# references to all figures
 	_figures = {}
 
@@ -61,6 +71,9 @@ class Figure(object):
 			# space around axes
 			self.margin = kwargs.get('margin', 2.)
 
+			# whether to use Helvetica or Computer Modern
+			self.sans_serif = kwargs.get('sans_serif', False)
+
 			# currently active axes
 			self._ca = None
 
@@ -92,10 +105,19 @@ class Figure(object):
 			if not height:
 				height = self.margin * 2. + 1.
 
+		preamble = Settings.preamble
+
+		if self.sans_serif:
+		   preamble = preamble + \
+			'\\usepackage[T1]{fontenc}\n' + \
+			'\\usepackage{helvet}\n' + \
+			'\\renewcommand{\\familydefault}{\\sfdefault}\n' + \
+			'\\usepackage{sfmath}\n'
+
 		tex = \
 			'\\documentclass{article}\n' + \
 			'\n' + \
-			Settings.preamble + \
+			preamble + \
 			'\n' + \
 			'\\usepackage[\n' + \
 			'\tmargin=0cm,\n' + \
