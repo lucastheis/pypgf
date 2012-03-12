@@ -46,6 +46,20 @@ version installed on your computer using
 	cat $(kpsewhich pgfplots.sty) | grep pgfplotsversion
 
 If the version number is lower than 1.4.0, [download][1] the latest version.
-To install the package, locate the old files with `kpsewhich pgfplots.sty`
+To install the package, locate the old package files with `kpsewhich pgfplots.sty`
 and replace them with the downloaded files. Afterwards, run `texhash`. See the
 PGFPlots manual for further instructions.
+
+If compilation succeeds for simpler figures but fails for more data-intensive figures,
+you probably need to increase the memory limits of your TeX distribution. Try locating
+your TeX distribution's `texmf.cnf` configuration file and increasing the memory limits.
+For example, set:
+
+	main_memory = 20000000
+	pool_size = 8900000
+	max_strings = 500000
+	hash_extra = 2000000
+
+Other parameters might be relevant as well. After changing the parameters, you need
+to run `fmtutil --byfmt latex`. More information can be found in the [PGFPlots][1]
+documentation.

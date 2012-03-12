@@ -195,6 +195,8 @@ class Plot(object):
 		if self.marker_size is not None:
 			marker_options.append('scale={0}'.format(self.marker_size))
 		if self.marker_opacity is not None:
+			if self.opacity is not None:
+				marker_options.append('opacity={0}'.format(self.opacity))
 			marker_options.append('fill opacity={0}'.format(self.marker_opacity))
 		elif self.opacity is not None:
 			marker_options.append('fill opacity={0}'.format(self.opacity))

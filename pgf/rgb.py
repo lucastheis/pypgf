@@ -41,5 +41,5 @@ class RGB(object):
 			return '{{rgb,255:red,{0};green,{1};blue,{2}}}'.format(
 				self.red, self.green, self.blue)
 		else:
-			return '{{rgb,1:red,{0};green,{1};blue,{2}}}'.format(
+			return '{{rgb,1:red,{0:.2f};green,{1:.2f};blue,{2:.2f}}}'.format(
 				self.red, self.green, self.blue)
