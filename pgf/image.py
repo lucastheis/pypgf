@@ -4,6 +4,7 @@ from utils import indent
 from axes import Axes
 from settings import Settings
 from os import path
+from colormap import colormaps
 
 class Image(object):
 	"""
@@ -24,7 +25,7 @@ class Image(object):
 		@param cmap:
 		"""
 
-		self.cmap = kwargs.get('cmap', 'gray')
+		self._cmap = kwargs.get('cmap', 'gray')
 
 		if isinstance(image, str):
 			self.image = PILImage.open(image)
@@ -51,6 +52,9 @@ class Image(object):
 
 				if image.ndim < 3:
 					image = repeat(image.reshape(image.shape[0], -1, 1), 3, 2)
+					for i in range(image.shape[0]):
+						for j in range(image.shape[1]):
+							image[i, j, :] = colormaps[self._cmap][image[i, j, 0]]
 
 			self.image = PILImage.fromarray(image)
 
