@@ -260,7 +260,7 @@ class Plot(object):
 			for x, y in zip(self.xvalues, self.yvalues):
 				tex += '\t({0}, {1})\n'.format(x, y)
 		if self.closed:
-			tex += '} \\closedcycle;'
+			tex += '} \\closedcycle;\n'
 		else:
 			tex += '};\n'
 

@@ -36,7 +36,7 @@ def draw():
 	gcf().draw()
 
 
-def figure(idx=None):
+def figure(idx=None, *args, **kwargs):
 	"""
 	Creates a new figure or moves the focus to an existing figure.
 
@@ -47,7 +47,7 @@ def figure(idx=None):
 	@return: currently active figure
 	"""
 
-	return Figure(idx)
+	return Figure(idx, *args, **kwargs)
 
 
 def plot(*args, **kwargs):
@@ -132,10 +132,16 @@ def plot(*args, **kwargs):
 		yvalues_error = copy(kwargs['yvalues_error'])
 
 	if len(args) > 1:
+		# heuristics to use if arguments differ in size
 		if args[0].shape[0] < args[1].shape[0]:
-			args[0] = repeat(args[0], args[1].shape[0], 0)
+			args[0] = repeat(args[0], ceil(args[1].shape[0] / float(args[0].shape[0])), 0)
 		if args[0].shape[0] > args[1].shape[0]:
-			args[1] = repeat(args[1], args[0].shape[0], 0)
+			args[1] = repeat(args[1], ceil(args[0].shape[0] / float(args[1].shape[0])), 0)
+
+		if args[0].shape[1] == 1:
+			args[0] = repeat(args[0], args[1].shape[1], 1)
+		if args[1].shape[1] == 1:
+			args[1] = repeat(args[1], args[0].shape[1], 1)
 
 	# if arguments contain multiple rows, create multiple plots
 	if len(args) and args[0].shape[0] > 1:
@@ -378,14 +384,8 @@ def axis(*args, **kwargs):
 		elif isinstance(args[0], list) or isinstance(args[0], ndarray):
 			gca().xmin, gca().xmax, gca().ymin, gca().ymax = args[0]
 
-	if 'width' in kwargs:
-		gca().width = kwargs['width']
-
-	if 'height' in kwargs:
-		gca().height = kwargs['height']
-
-	if 'pgf_options' in kwargs:
-		gca().pgf_options = kwargs['pgf_options']
+	for key, value in kwargs.items():
+		gca().__dict__[key] = value
 
 	return gca()
 
@@ -498,8 +498,9 @@ def subplot(i, j, **kwargs):
 
 def imshow(image, **kwargs):
 	img = Image(image, **kwargs)
-	gca().width = 2.54 / 72. * img.width()
-	gca().height = 2.54 / 72. * img.height()
+	dpi = kwargs.get('dpi', 150.)
+	gca().width = 2.54 / dpi * img.width()
+	gca().height = 2.54 / dpi * img.height()
 	gca().xtick_align = 'outside'
 	gca().ytick_align = 'outside'
 	axis('tight')
