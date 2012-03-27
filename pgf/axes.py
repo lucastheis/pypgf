@@ -99,6 +99,15 @@ class Axes(object):
 	@type hide_axis: boolean
 	@ivar hide_axis: if true, don't show any axes
 
+	@type hide_x_axis: boolean
+	@ivar hide_x_axis: if true, don't show any axes
+
+	@type hide_y_axis: boolean
+	@ivar hide_y_axis: if true, don't show any axes
+
+	@type axis_on_top: boolean
+	@ivar axis_on_top: if enabled, axes are drawn on top of images (default: True)
+
 	@type cycle_list: CycleList/list/None
 	@ivar cycle_list: a list of styles used for plots
 
@@ -163,6 +172,9 @@ class Axes(object):
 		# if true, put a margin between plots and axes
 		self.enlargelimits = kwargs.get('enlargelimits', None)
 
+		# makes sure that axis are drawn on top of images
+		self.axis_on_top = kwargs.get('axis_on_top', True)
+
 		# tick positions
 		self.xtick = kwargs.get('xtick', None)
 		self.ytick = kwargs.get('ytick', None)
@@ -206,6 +218,8 @@ class Axes(object):
 
 		# axis on/off
 		self.hide_axis = kwargs.get('hide_axis', False)
+		self.hide_x_axis = kwargs.get('hide_x_axis', False)
+		self.hide_y_axis = kwargs.get('hide_y_axis', False)
 
 		# custom axes properties
 		self.pgf_options = kwargs.get('pgf_options', [])
@@ -259,6 +273,9 @@ class Axes(object):
 		if self.enlargelimits is not None:
 			options.append('enlargelimits={0}'.format(
 				'true' if self.enlargelimits else 'false'))
+
+		if self.axis_on_top:
+			options.append('axis on top')
 
 		# different properties
 		if self.legend:
@@ -367,6 +384,10 @@ class Axes(object):
 		# axis off/on
 		if self.hide_axis:
 			options.append('hide axis')
+		if self.hide_x_axis:
+			options.append('hide x axis')
+		if self.hide_y_axis:
+			options.append('hide y axis')
 
 		# custom options
 		options.extend(self.pgf_options)
