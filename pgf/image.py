@@ -38,7 +38,7 @@ class Image(object):
 				# copy array
 				image = array(image)
 
-				if image.dtype.kind != 'i':
+				if image.dtype.kind not in ['u', 'i']:
 					vmin = kwargs.get('vmin', min(image))
 					vmax = kwargs.get('vmax', max(image))
 
