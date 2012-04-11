@@ -83,6 +83,9 @@ class Plot(object):
 
 	@type pgf_options: list
 	@ivar pgf_options: custom PGFPlots plot options
+
+	@type comment: string
+	@ivar comment: can be used to put a comment into the LaTeX code
 	"""
 
 	def __init__(self, *args, **kwargs):
@@ -141,6 +144,9 @@ class Plot(object):
 		# catch common mistakes
 		if not isinstance(self.pgf_options, list):
 			raise TypeError('pgf_options should be a list.')
+
+		# comment LaTeX code
+		self.comment = kwargs.get('comment', '')
 
 		# add plot to axes
 		self.axes = kwargs.get('axis', Axes.gca())
@@ -241,10 +247,11 @@ class Plot(object):
 		if len(options_string) > 70:
 			options_string = '\n' + indent(',\n'.join(options))
 
+		tex = '% ' + self.comment + '\n' if self.comment else ''
 		if options_string:
-			tex = '\\addplot+[{0}] coordinates {{\n'.format(options_string)
+			tex += '\\addplot+[{0}] coordinates {{\n'.format(options_string)
 		else:
-			tex = '\\addplot coordinates {{\n'.format(options_string)
+			tex += '\\addplot coordinates {\n'
 
 		if len(self.xvalues_error) or len(self.yvalues_error):
 			x_error = self.xvalues_error if len(self.xvalues_error) \

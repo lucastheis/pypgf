@@ -119,6 +119,9 @@ class Axes(object):
 
 	@type children: list
 	@ivar children: list of plots belonging to this axes object
+
+	@type comment: string
+	@ivar comment: can be used to put a comment into the LaTeX code
 	"""
 
 	@staticmethod
@@ -223,6 +226,9 @@ class Axes(object):
 
 		# custom axes properties
 		self.pgf_options = kwargs.get('pgf_options', [])
+
+		# comment LaTeX code
+		self.comment = kwargs.get('comment', '')
 
 		if not self.figure:
 			self.figure = Figure.gcf()
@@ -392,7 +398,8 @@ class Axes(object):
 		# custom options
 		options.extend(self.pgf_options)
 
-		tex = '\\begin{{{0}}}[\n'.format(self.axes_type)
+		tex = '% ' + self.comment + '\n' if self.comment else ''
+		tex += '\\begin{{{0}}}[\n'.format(self.axes_type)
 		tex += indent(',\n'.join(options)) + ']\n'
 		for child in self.children:
 			tex += indent(child.render())
