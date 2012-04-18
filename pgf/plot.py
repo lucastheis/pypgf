@@ -18,6 +18,9 @@ class Plot(object):
 	@type yvalues: array_like
 	@ivar yvalues: y-coordinates of data points
 
+	@type labels: list/None
+	@ivar labels: a list of strings labeling each data point 
+
 	@type line_style: string/None
 	@ivar line_style: solid, dashed, dotted or other line styles
 
@@ -78,6 +81,9 @@ class Plot(object):
 	@type const_plot: boolean
 	@ivar const_plot: if true, values will no longer be linearly interpolated
 
+	@type pattern: string/None
+	@ivar pattern: a PGF pattern to fill bar and area plots
+
 	@type legend_entry: string/None
 	@ivar legend_entry: legend entry for this plot
 
@@ -104,6 +110,15 @@ class Plot(object):
 			self.xvalues = asarray(args[0]).flatten()
 			self.yvalues = asarray(args[1]).flatten()
 
+		# labels for each data point
+		self.labels = kwargs.get('labels', None)
+
+		if isinstance(self.labels, str):
+			self.labels = [self.labels]
+
+		if self.labels and len(self.labels) != len(self.xvalues):
+			raise ValueError('The number of labels should correspond to the number of data points.')
+
 		# line style
 		self.line_style = kwargs.get('line_style', None)
 		self.line_width = kwargs.get('line_width', None)
@@ -126,6 +141,9 @@ class Plot(object):
 		self.error_color = kwargs.get('error_color', None)
 		self.error_style = kwargs.get('error_style', None)
 		self.error_width = kwargs.get('error_width', None)
+
+		# PGF pattern to fill area and bar plots
+		self.pattern = kwargs.get('pattern', None)
 
 		# comb (or stem) plots
 		self.ycomb = kwargs.get('ycomb', False)
@@ -209,6 +227,13 @@ class Plot(object):
 		if marker_options:
 			options.append('mark options={{{0}}}'.format(', '.join(marker_options)))
 
+		# custom properties
+		options.extend(list(self.pgf_options))
+
+		# PGF pattern
+		if self.pattern:
+			options.append('pattern={{{0}}}'.format(self.pattern))
+
 		# error bar properties
 		if len(self.xvalues_error) or len(self.yvalues_error):
 			options.append('error bars/.cd')
@@ -235,12 +260,13 @@ class Plot(object):
 		elif self.xcomb:
 			options.append('xcomb')
 
-		# can turn off linear interpolation
+		# linear interpolation
 		if self.const_plot:
 			options.append('const plot')
 
-		# custom properties
-		options.extend(list(self.pgf_options))
+		if self.labels:
+			options.append('nodes near coords')
+			options.append('point meta=explicit symbolic')
 
 		# summarize options into one string
 		options_string = ', '.join(options)
@@ -264,8 +290,12 @@ class Plot(object):
 				tex += '\t({0}, {1}) +- ({2}, {3})\n'.format(x, y, e, f)
 		else:
 			# render plot coordinates
-			for x, y in zip(self.xvalues, self.yvalues):
-				tex += '\t({0}, {1})\n'.format(x, y)
+			if self.labels:
+				for x, y, l in zip(self.xvalues, self.yvalues, self.labels):
+					tex += '\t({0}, {1}) [{2}]\n'.format(x, y, l)
+			else:
+				for x, y in zip(self.xvalues, self.yvalues):
+					tex += '\t({0}, {1})\n'.format(x, y)
 		if self.closed:
 			tex += '} \\closedcycle;\n'
 		else:

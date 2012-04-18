@@ -23,4 +23,5 @@ class Settings(object):
 		'\\usepackage{amsmath}\n' + \
 		'\\usepackage{amssymb}\n' + \
 		'\\usepackage{pgfplots}\n' + \
-		'\\usepgflibrary{arrows}\n'
+		'\\usepgflibrary{arrows}\n' + \
+		'\\usetikzlibrary{patterns}\n'
