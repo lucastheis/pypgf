@@ -45,6 +45,21 @@ class Axes(object):
 	@type ytick: list/None
 	@ivar ytick: location of ticks at y-axis
 
+	@type xminorticks: boolean/None
+	@ivar xminorticks: enable/disable small tick lines
+
+	@type yminorticks: boolean/None
+	@ivar yminorticks: enable/disable small tick lines
+
+	@type xmajorticks: boolean/None
+	@ivar xmajorticks: enable/disable large tick lines
+
+	@type ymajorticks: boolean/None
+	@ivar ymajorticks: enable/disable large tick lines
+
+	@type ticks: string/None
+	@ivar ticks: can be 'minor', 'major', 'both' or 'none'
+
 	@type xticklabel_precision: integer/None
 	@ivar xticklabel_precision: precision of x-axis tick labels
 
@@ -182,6 +197,13 @@ class Axes(object):
 		self.xtick = kwargs.get('xtick', None)
 		self.ytick = kwargs.get('ytick', None)
 
+		# enable/disable ticks
+		self.xminorticks = kwargs.get('xminorticks', None)
+		self.yminorticks = kwargs.get('yminorticks', None)
+		self.xmajorticks = kwargs.get('xmajorticks', None)
+		self.ymajorticks = kwargs.get('ymajorticks', None)
+		self.ticks = kwargs.get('ticks', None)
+
 		# tick label precisions
 		self.xticklabel_precision = kwargs.get('xticklabel_precision', 4)
 		self.yticklabel_precision = kwargs.get('yticklabel_precision', 4)
@@ -312,6 +334,16 @@ class Axes(object):
 		elif self.ytick is not None:
 			options.append('ytick=\empty')
 			options.append('ytick scale label code/.code={}')
+		if self.xminorticks is not None:
+			options.append('xminorticks=' + str(self.xminorticks).lower())
+		if self.yminorticks is not None:
+			options.append('yminorticks=' + str(self.yminorticks).lower())
+		if self.xmajorticks is not None:
+			options.append('xmajorticks=' + str(self.xmajorticks).lower())
+		if self.ymajorticks is not None:
+			options.append('ymajorticks=' + str(self.ymajorticks).lower())
+		if self.ticks is not None:
+			options.append('ticks={{{0}}}'.format(self.ticks))
 		if self.xtick_align is not None:
 			options.append('xtick align={{{0}}}'.format(self.xtick_align))
 		if self.ytick_align is not None:
