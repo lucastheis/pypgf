@@ -121,7 +121,10 @@ class Axes(object):
 	@ivar hide_y_axis: if true, don't show any axes
 
 	@type axis_on_top: boolean
-	@ivar axis_on_top: if enabled, axes are drawn on top of images (default: True)
+	@ivar axis_on_top: if true, axes are drawn on top of images and other objects (default: True)
+
+	@type clip: boolean/None
+	@ivar clip: if false, plots can extend beyond axes
 
 	@type cycle_list: CycleList/list/None
 	@ivar cycle_list: a list of styles used for plots
@@ -190,8 +193,11 @@ class Axes(object):
 		# if true, put a margin between plots and axes
 		self.enlargelimits = kwargs.get('enlargelimits', None)
 
-		# makes sure that axis are drawn on top of images
+		# if true, axes are drawn on top of images
 		self.axis_on_top = kwargs.get('axis_on_top', True)
+
+		# if true, plots are clipped where axes end
+		self.clip = kwargs.get('clip', None)
 
 		# tick positions
 		self.xtick = kwargs.get('xtick', None)
@@ -299,8 +305,10 @@ class Axes(object):
 						prop, escape(str(self.__dict__[prop]))))
 
 		if self.enlargelimits is not None:
-			options.append('enlargelimits={0}'.format(
-				'true' if self.enlargelimits else 'false'))
+			options.append('enlargelimits={0}'.format(str(self.enlargelimits).lower()))
+
+		if self.clip is not None:
+			options.append('clip={0}'.format(str(self.clip).lower()))
 
 		if self.axis_on_top:
 			options.append('axis on top')
