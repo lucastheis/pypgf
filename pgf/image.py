@@ -69,7 +69,7 @@ class Image(object):
 			self.ymin, self.ymax = kwargs['limits']
 
 		# add image to axis
-		self.axes = kwargs.get('axis', Axes.gca())
+		self.axes = kwargs.get('axes', Axes.gca())
 		self.axes.children.append(self)
 
 		self.idx = Image._counter
