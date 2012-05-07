@@ -9,6 +9,7 @@ from boxplot import BoxPlot
 from surfplot import SurfPlot
 from arrow import Arrow
 from text import Text
+from rectangle import Rectangle
 from numpy import asmatrix, inf, min, copy, arange, repeat, isscalar, sum, ndarray
 from numpy import histogram, append
 from image import Image
@@ -451,6 +452,39 @@ def arrow(x, y, dx, dy, format_string='', **kwargs):
 			kwargs['line_style'] = 'densely dotted'
 
 	return Arrow(x, y, dx, dy, **kwargs)
+
+
+
+def rectangle(x, y, dx, dy, format_string='', **kwargs):
+	if 'color' not in kwargs:
+		if 'r' in format_string:
+			kwargs['color'] = 'red'
+		elif 'g' in format_string:
+			kwargs['color'] = 'green'
+		elif 'b' in format_string:
+			kwargs['color'] = 'blue'
+		elif 'c' in format_string:
+			kwargs['color'] = 'cyan'
+		elif 'm' in format_string:
+			kwargs['color'] = 'magenta'
+		elif 'y' in format_string:
+			kwargs['color'] = 'yellow'
+		elif 'k' in format_string:
+			kwargs['color'] = 'black'
+		elif 'w' in format_string:
+			kwargs['color'] = 'white'
+
+	if 'line_style' not in kwargs:
+		if '---' in format_string:
+			kwargs['line_style'] = 'densely dashed'
+		elif '--' in format_string:
+			kwargs['line_style'] = 'dashed'
+		elif '-' in format_string:
+			kwargs['line_style'] = 'solid'
+		elif ':' in format_string:
+			kwargs['line_style'] = 'densely dotted'
+
+	return Rectangle(x, y, dx, dy, **kwargs)
 
 
 def text(x, y, text, **kwargs):

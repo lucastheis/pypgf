@@ -45,6 +45,21 @@ class Axes(object):
 	@type ytick: list/None
 	@ivar ytick: location of ticks at y-axis
 
+	@type xminorticks: boolean/None
+	@ivar xminorticks: enable/disable small tick lines
+
+	@type yminorticks: boolean/None
+	@ivar yminorticks: enable/disable small tick lines
+
+	@type xmajorticks: boolean/None
+	@ivar xmajorticks: enable/disable large tick lines
+
+	@type ymajorticks: boolean/None
+	@ivar ymajorticks: enable/disable large tick lines
+
+	@type ticks: string/None
+	@ivar ticks: can be 'minor', 'major', 'both' or 'none'
+
 	@type xticklabel_precision: integer/None
 	@ivar xticklabel_precision: precision of x-axis tick labels
 
@@ -106,7 +121,10 @@ class Axes(object):
 	@ivar hide_y_axis: if true, don't show any axes
 
 	@type axis_on_top: boolean
-	@ivar axis_on_top: if enabled, axes are drawn on top of images (default: True)
+	@ivar axis_on_top: if true, axes are drawn on top of images and other objects (default: True)
+
+	@type clip: boolean/None
+	@ivar clip: if false, plots can extend beyond axes
 
 	@type cycle_list: CycleList/list/None
 	@ivar cycle_list: a list of styles used for plots
@@ -175,12 +193,22 @@ class Axes(object):
 		# if true, put a margin between plots and axes
 		self.enlargelimits = kwargs.get('enlargelimits', None)
 
-		# makes sure that axis are drawn on top of images
+		# if true, axes are drawn on top of images
 		self.axis_on_top = kwargs.get('axis_on_top', True)
+
+		# if true, plots are clipped where axes end
+		self.clip = kwargs.get('clip', None)
 
 		# tick positions
 		self.xtick = kwargs.get('xtick', None)
 		self.ytick = kwargs.get('ytick', None)
+
+		# enable/disable ticks
+		self.xminorticks = kwargs.get('xminorticks', None)
+		self.yminorticks = kwargs.get('yminorticks', None)
+		self.xmajorticks = kwargs.get('xmajorticks', None)
+		self.ymajorticks = kwargs.get('ymajorticks', None)
+		self.ticks = kwargs.get('ticks', None)
 
 		# tick label precisions
 		self.xticklabel_precision = kwargs.get('xticklabel_precision', 4)
@@ -277,8 +305,10 @@ class Axes(object):
 						prop, escape(str(self.__dict__[prop]))))
 
 		if self.enlargelimits is not None:
-			options.append('enlargelimits={0}'.format(
-				'true' if self.enlargelimits else 'false'))
+			options.append('enlargelimits={0}'.format(str(self.enlargelimits).lower()))
+
+		if self.clip is not None:
+			options.append('clip={0}'.format(str(self.clip).lower()))
 
 		if self.axis_on_top:
 			options.append('axis on top')
@@ -312,6 +342,16 @@ class Axes(object):
 		elif self.ytick is not None:
 			options.append('ytick=\empty')
 			options.append('ytick scale label code/.code={}')
+		if self.xminorticks is not None:
+			options.append('xminorticks=' + str(self.xminorticks).lower())
+		if self.yminorticks is not None:
+			options.append('yminorticks=' + str(self.yminorticks).lower())
+		if self.xmajorticks is not None:
+			options.append('xmajorticks=' + str(self.xmajorticks).lower())
+		if self.ymajorticks is not None:
+			options.append('ymajorticks=' + str(self.ymajorticks).lower())
+		if self.ticks is not None:
+			options.append('ticks={{{0}}}'.format(self.ticks))
 		if self.xtick_align is not None:
 			options.append('xtick align={{{0}}}'.format(self.xtick_align))
 		if self.ytick_align is not None:

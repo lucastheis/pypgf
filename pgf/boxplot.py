@@ -26,7 +26,7 @@ class BoxPlot(object):
 			raise TypeError('pgf_options should be a list.')
 
 		# add plot to axes
-		self.axes = kwargs.get('axis', Axes.gca())
+		self.axes = kwargs.get('axes', Axes.gca())
 		self.axes.children.append(self)
 
 

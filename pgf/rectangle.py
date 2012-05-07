@@ -1,7 +1,7 @@
 from axes import Axes
 from utils import indent
 
-class Arrow(object):
+class Rectangle(object):
 	def __init__(self, x, y, dx, dy, **kwargs):
 		self.x = x
 		self.y = y
@@ -10,7 +10,6 @@ class Arrow(object):
 
 		# properties
 		self.color = kwargs.get('color', None)
-		self.arrow_style = kwargs.get('arrow_style', '-latex')
 		self.line_style = kwargs.get('line_style', None)
 		self.line_width = kwargs.get('line_width', None)
 
@@ -21,13 +20,13 @@ class Arrow(object):
 		if not isinstance(self.pgf_options, list):
 			raise TypeError('pgf_options should be a list.')
 
-		# add arrow to axes
-		self.axes = kwargs.get('axis', Axes.gca())
+		# add rectangle to axes
+		self.axes = kwargs.get('axes', Axes.gca())
 		self.axes.children.append(self)
 
 
 	def render(self):
-		options = [self.arrow_style]
+		options = []
 
 		if self.line_style:
 			options.append(self.line_style)
@@ -43,7 +42,7 @@ class Arrow(object):
 		if len(options_string) > 70:
 			options_string = '\n' + indent(',\n'.join(options))
 
-		return '\\draw[{0}] (axis cs:{1},{2}) -- (axis cs:{3},{4});\n'.format(
+		return '\\draw[{0}] (axis cs:{1},{2}) rectangle (axis cs:{3},{4});\n'.format(
 			options_string, self.x, self.y, self.x + self.dx, self.y + self.dy)
 
 

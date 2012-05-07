@@ -9,8 +9,8 @@ class Plot(object):
 	"""
 	Represents line plots.
 
-	@type axis: L{Axes}
-	@ivar axis: reference to assigned axis
+	@type axes: L{Axes}
+	@ivar axes: add plot to these axes
 
 	@type xvalues: array_like
 	@ivar xvalues: x-coordinates of data points
@@ -167,7 +167,7 @@ class Plot(object):
 		self.comment = kwargs.get('comment', '')
 
 		# add plot to axes
-		self.axes = kwargs.get('axis', Axes.gca())
+		self.axes = kwargs.get('axes', Axes.gca())
 		self.axes.children.append(self)
 
 

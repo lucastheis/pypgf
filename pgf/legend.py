@@ -14,7 +14,7 @@ class Legend(object):
 		self.align = kwargs.get('align', 'left')
 
 		# assign legend to axis
-		self.axes = kwargs.get('axis', Axes.gca())
+		self.axes = kwargs.get('axes', Axes.gca())
 		self.axes.legend = self
 
 
