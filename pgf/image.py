@@ -23,6 +23,13 @@ class Image(object):
 		@param vmax:
 
 		@param cmap:
+
+		@param xmin:
+		@param xmax:
+		@param ymin:
+		@param ymax:
+
+		@param limits:
 		"""
 
 		self._cmap = kwargs.get('cmap', 'gray')
