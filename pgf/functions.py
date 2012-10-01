@@ -10,8 +10,9 @@ from surfplot import SurfPlot
 from arrow import Arrow
 from text import Text
 from rectangle import Rectangle
+from circle import Circle
 from numpy import asmatrix, inf, min, copy, arange, repeat, isscalar, sum, ndarray
-from numpy import histogram, append
+from numpy import histogram, append, ceil
 from image import Image
 
 def gcf():
@@ -328,8 +329,11 @@ def ylabel(ylabel):
 	gca().ylabel = ylabel
 
 
-def xtick(xtick, labels=None):
+def xtick(xtick, labels=None, rotation=None):
 	gca().xtick = xtick
+
+	if rotation:
+		gca().xticklabel_rotation = rotation
 
 	if labels is not None:
 		xticklabels(labels)
@@ -342,8 +346,11 @@ def ytick(ytick, labels=None):
 		yticklabels(labels)
 
 
-def xticklabels(xticklabels):
+def xticklabels(xticklabels, rotation=None):
 	gca().xticklabels = xticklabels
+
+	if rotation:
+		gca().xticklabel_rotation = rotation
 
 	if not gca().xtick:
 		xtick(range(1, len(xticklabels) + 1))
@@ -389,6 +396,19 @@ def axis(*args, **kwargs):
 		gca().__dict__[key] = value
 
 	return gca()
+
+
+
+def xlim(xmin, xmax):
+	gca().xmin = xmin
+	gca().xmax = xmax
+
+
+
+def ylim(ymin, ymax):
+	gca().ymin = ymin
+	gca().ymax = ymax
+
 
 
 def grid(value=None):
@@ -485,6 +505,39 @@ def rectangle(x, y, dx, dy, format_string='', **kwargs):
 			kwargs['line_style'] = 'densely dotted'
 
 	return Rectangle(x, y, dx, dy, **kwargs)
+
+
+
+def circle(x, y, r, format_string='', **kwargs):
+	if 'color' not in kwargs:
+		if 'r' in format_string:
+			kwargs['color'] = 'red'
+		elif 'g' in format_string:
+			kwargs['color'] = 'green'
+		elif 'b' in format_string:
+			kwargs['color'] = 'blue'
+		elif 'c' in format_string:
+			kwargs['color'] = 'cyan'
+		elif 'm' in format_string:
+			kwargs['color'] = 'magenta'
+		elif 'y' in format_string:
+			kwargs['color'] = 'yellow'
+		elif 'k' in format_string:
+			kwargs['color'] = 'black'
+		elif 'w' in format_string:
+			kwargs['color'] = 'white'
+
+	if 'line_style' not in kwargs:
+		if '---' in format_string:
+			kwargs['line_style'] = 'densely dashed'
+		elif '--' in format_string:
+			kwargs['line_style'] = 'dashed'
+		elif '-' in format_string:
+			kwargs['line_style'] = 'solid'
+		elif ':' in format_string:
+			kwargs['line_style'] = 'densely dotted'
+
+	return Circle(x, y, r, **kwargs)
 
 
 def text(x, y, text, **kwargs):
