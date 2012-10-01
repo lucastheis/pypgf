@@ -60,6 +60,12 @@ class Axes(object):
 	@type ticks: string/None
 	@ivar ticks: can be 'minor', 'major', 'both' or 'none'
 
+	@type xticklabel_rotation: integer/None
+	@ivar xticklabel_rotation: rotation of x-axis tick labels in degrees
+
+	@type yticklabel_rotation: integer/None
+	@ivar yticklabel_rotation: rotation of y-axis tick labels in degrees
+
 	@type xticklabel_precision: integer/None
 	@ivar xticklabel_precision: precision of x-axis tick labels
 
@@ -210,6 +216,10 @@ class Axes(object):
 		self.ymajorticks = kwargs.get('ymajorticks', None)
 		self.ticks = kwargs.get('ticks', None)
 
+		# tick label rotation
+		self.xticklabel_rotation = kwargs.get('xticklabel_rotation', None)
+		self.yticklabel_rotation = kwargs.get('yticklabel_rotation', None)
+
 		# tick label precisions
 		self.xticklabel_precision = kwargs.get('xticklabel_precision', 4)
 		self.yticklabel_precision = kwargs.get('yticklabel_precision', 4)
@@ -356,6 +366,10 @@ class Axes(object):
 			options.append('xtick align={{{0}}}'.format(self.xtick_align))
 		if self.ytick_align is not None:
 			options.append('ytick align={{{0}}}'.format(self.ytick_align))
+		if self.yticklabel_rotation is not None:
+			options.append('y tick label style={{rotate={0}, anchor=east}}'.format(self.yticklabel_rotation))
+		if self.xticklabel_rotation is not None:
+			options.append('x tick label style={{rotate={0}, anchor=east}}'.format(self.xticklabel_rotation))
 		if self.xticklabel_precision is not None and self.axes_type in ['axis', 'semilogyaxis']:
 			options.append(
 				r'xticklabel={{\pgfmathprintnumber[precision={0}]{{\tick}}}}'.format(
