@@ -62,7 +62,7 @@ gca().height, gca().width = 10, 8
 draw()
 
 # save LaTeX code
-save('examples.tex')
+savefig('examples.tex')
 
 
 
