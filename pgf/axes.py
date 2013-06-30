@@ -24,6 +24,9 @@ class Axes(object):
 	@type ylabel: string
 	@ivar ylabel: label next to y-axis
 
+	@type zlabel: string
+	@ivar zlabel: label next to z-axis
+
 	@type xmin: float/None
 	@ivar xmin: lower limit of x-axis
 
@@ -35,6 +38,12 @@ class Axes(object):
 
 	@type ymax: float/None
 	@ivar ymax: upper limit of y-axis
+
+	@type zmin: float/None
+	@ivar zmin: lower limit of z-axis
+
+	@type zmax: float/None
+	@ivar zmax: upper limit of z-axis
 
 	@type enlargelimits: boolean/None
 	@ivar enlargelimits: add a margin between plots and axes
@@ -84,6 +93,12 @@ class Axes(object):
 	@type yticklabels: list/None
 	@ivar yticklabels: labeling of ticks
 
+	@type label_font_size: integer/None
+	@ivar label_font_size: font size of axis labels in points
+
+	@type tick_label_font_size: integer/None
+	@ivar tick_label_font_size: font size of tick labels in points
+
 	@type equal: boolean/None
 	@ivar equal: forces units on all axes to have equal lengths
 
@@ -116,6 +131,9 @@ class Axes(object):
 
 	@type colormap: string/None
 	@ivar colormap: colormap used by some plots, e.g. 'hot', 'cool', 'bluered'
+
+	@type colorbar: bool/None
+	@ivar colorbar: if true, a color bar is shown
 
 	@type hide_axis: boolean
 	@ivar hide_axis: if true, don't show any axes
@@ -189,12 +207,20 @@ class Axes(object):
 		# axes labels
 		self.xlabel = kwargs.get('xlabel', '')
 		self.ylabel = kwargs.get('ylabel', '')
+		self.zlabel = kwargs.get('zlabel', '')
+
+		# move axis labels closer to tick labels
+		self.xlabel_near_ticks = kwargs.get('xlabel_near_ticks', True)
+		self.ylabel_near_ticks = kwargs.get('ylabel_near_ticks', True)
+		self.zlabel_near_ticks = kwargs.get('zlabel_near_ticks', True)
 
 		# axes limits
 		self.xmin = kwargs.get('xmin', None)
 		self.xmax = kwargs.get('xmax', None)
 		self.ymin = kwargs.get('ymin', None)
 		self.ymax = kwargs.get('ymax', None)
+		self.zmin = kwargs.get('zmin', None)
+		self.zmax = kwargs.get('zmax', None)
 
 		# if true, put a margin between plots and axes
 		self.enlargelimits = kwargs.get('enlargelimits', None)
@@ -208,29 +234,40 @@ class Axes(object):
 		# tick positions
 		self.xtick = kwargs.get('xtick', None)
 		self.ytick = kwargs.get('ytick', None)
+		self.ztick = kwargs.get('ztick', None)
 
 		# enable/disable ticks
 		self.xminorticks = kwargs.get('xminorticks', None)
 		self.yminorticks = kwargs.get('yminorticks', None)
+		self.zminorticks = kwargs.get('zminorticks', None)
 		self.xmajorticks = kwargs.get('xmajorticks', None)
 		self.ymajorticks = kwargs.get('ymajorticks', None)
+		self.zmajorticks = kwargs.get('zmajorticks', None)
 		self.ticks = kwargs.get('ticks', None)
 
 		# tick label rotation
 		self.xticklabel_rotation = kwargs.get('xticklabel_rotation', None)
 		self.yticklabel_rotation = kwargs.get('yticklabel_rotation', None)
+		self.zticklabel_rotation = kwargs.get('zticklabel_rotation', None)
 
 		# tick label precisions
 		self.xticklabel_precision = kwargs.get('xticklabel_precision', 4)
 		self.yticklabel_precision = kwargs.get('yticklabel_precision', 4)
+		self.zticklabel_precision = kwargs.get('zticklabel_precision', 4)
 
 		# tick positions
 		self.xtick_align = kwargs.get('xtick_align', None)
 		self.ytick_align = kwargs.get('ytick_align', None)
+		self.ztick_align = kwargs.get('ztick_align', None)
 
 		# tick labels
 		self.xticklabels = kwargs.get('xticklabels', None)
 		self.yticklabels = kwargs.get('yticklabels', None)
+		self.zticklabels = kwargs.get('zticklabels', None)
+
+		# font sizes
+		self.label_font_size = kwargs.get('label_font_size', None)
+		self.tick_label_font_size = kwargs.get('tick_label_font_size', None)
 
 		# linear or logarithmic axes
 		self.axes_type = kwargs.get('axes_type', 'axis')
@@ -251,6 +288,7 @@ class Axes(object):
 
 		# color and style specifications
 		self.colormap = kwargs.get('colormap', None)
+		self.colorbar = kwargs.get('colorbar', None)
 		self.cycle_list = kwargs.get('cycle_list', None)
 		self.cycle_list_name = kwargs.get('cycle_list_name', None)
 
@@ -303,8 +341,11 @@ class Axes(object):
 			'xmax',
 			'ymin',
 			'ymax',
+			'zmin',
+			'zmax',
 			'xlabel',
-			'ylabel']
+			'ylabel',
+			'zlabel']
 
 		for prop in properties:
 			if self.__dict__.get(prop, None) not in ['', None]:
@@ -326,10 +367,12 @@ class Axes(object):
 		# different properties
 		if self.legend:
 			options.append(self.legend.render())
-		if self.xlabel:
+		if self.xlabel and self.xlabel_near_ticks:
 			options.append('xlabel near ticks')
-		if self.ylabel:
+		if self.ylabel and self.ylabel_near_ticks:
 			options.append('ylabel near ticks')
+		if self.zlabel and self.zlabel_near_ticks:
+			options.append('zlabel near ticks')
 		if self.equal:
 			options.append('axis equal=true')
 		if self.grid:
@@ -352,24 +395,40 @@ class Axes(object):
 		elif self.ytick is not None:
 			options.append('ytick=\empty')
 			options.append('ytick scale label code/.code={}')
+		if self.ztick:
+			options.append('ztick={{{0}}}'.format(
+				','.join(str(t) for t in self.ytick)))
+			if self.zticklabels:
+				options.append('ztick scale label code/.code={}')
+		elif self.ztick is not None:
+			options.append('ztick=\empty')
+			options.append('ztick scale label code/.code={}')
 		if self.xminorticks is not None:
 			options.append('xminorticks=' + str(self.xminorticks).lower())
 		if self.yminorticks is not None:
 			options.append('yminorticks=' + str(self.yminorticks).lower())
+		if self.zminorticks is not None:
+			options.append('zminorticks=' + str(self.yminorticks).lower())
 		if self.xmajorticks is not None:
 			options.append('xmajorticks=' + str(self.xmajorticks).lower())
 		if self.ymajorticks is not None:
 			options.append('ymajorticks=' + str(self.ymajorticks).lower())
+		if self.zmajorticks is not None:
+			options.append('zmajorticks=' + str(self.zmajorticks).lower())
 		if self.ticks is not None:
 			options.append('ticks={{{0}}}'.format(self.ticks))
 		if self.xtick_align is not None:
 			options.append('xtick align={{{0}}}'.format(self.xtick_align))
 		if self.ytick_align is not None:
 			options.append('ytick align={{{0}}}'.format(self.ytick_align))
-		if self.yticklabel_rotation is not None:
-			options.append('y tick label style={{rotate={0}, anchor=east}}'.format(self.yticklabel_rotation))
+		if self.ztick_align is not None:
+			options.append('ztick align={{{0}}}'.format(self.ytick_align))
 		if self.xticklabel_rotation is not None:
 			options.append('x tick label style={{rotate={0}, anchor=east}}'.format(self.xticklabel_rotation))
+		if self.yticklabel_rotation is not None:
+			options.append('y tick label style={{rotate={0}, anchor=east}}'.format(self.yticklabel_rotation))
+		if self.zticklabel_rotation is not None:
+			options.append('z tick label style={{rotate={0}, anchor=east}}'.format(self.zticklabel_rotation))
 		if self.xticklabel_precision is not None and self.axes_type in ['axis', 'semilogyaxis']:
 			options.append(
 				r'xticklabel={{\pgfmathprintnumber[precision={0}]{{\tick}}}}'.format(
@@ -378,12 +437,30 @@ class Axes(object):
 			options.append(
 				r'yticklabel={{\pgfmathprintnumber[precision={0}]{{\tick}}}}'.format(
 					self.yticklabel_precision))
-		if self.yticklabels is not None:
-			options.append('yticklabels={{{0}}}'.format(
-				','.join(escape(self.yticklabels))))
+		if self.zticklabel_precision is not None and self.axes_type in ['axis', 'semilogxaxis']:
+			options.append(
+				r'zticklabel={{\pgfmathprintnumber[precision={0}]{{\tick}}}}'.format(
+					self.zticklabel_precision))
 		if self.xticklabels is not None:
 			options.append('xticklabels={{{0}}}'.format(
 				','.join(escape(self.xticklabels))))
+		if self.yticklabels is not None:
+			options.append('yticklabels={{{0}}}'.format(
+				','.join(escape(self.yticklabels))))
+		if self.zticklabels is not None:
+			options.append('zticklabels={{{0}}}'.format(
+				','.join(escape(self.zticklabels))))
+
+		if self.label_font_size is not None:
+			options.append('label style={{font=\\fontsize{{{0:d}pt}}{{{0:d}pt}}\\selectfont}}'.format(
+				self.label_font_size))
+		if self.tick_label_font_size is not None:
+			options.append('tick label style={{font=\\fontsize{{{0:d}pt}}{{{0:d}pt}}\\selectfont}}'.format(
+				self.tick_label_font_size))
+
+		# color bar
+		if self.colorbar:
+			options.append('colorbar=true')
 
 		# axis positions
 		if self.axis_x_line:

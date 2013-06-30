@@ -29,6 +29,12 @@ class SurfPlot(object):
 		self.axes = kwargs.get('axes', Axes.gca())
 		self.axes.children.append(self)
 
+		# adjust default behavior for 3D plots
+		self.axes.axis_on_top = False
+		self.axes.xlabel_near_ticks = False
+		self.axes.ylabel_near_ticks = False
+		self.axes.zlabel_near_ticks = False
+
 
 	def render(self):
 		options = ['surf']
