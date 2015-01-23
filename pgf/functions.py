@@ -245,6 +245,9 @@ def hist(values, bins=10, format_string='', range=None, normed=False, density=Fa
 	@type  density: boolean
 	@param density: if true, the histogram is normalized to yield a density
 
+	@type  log: boolean
+	@param log: if true, the log-histogram is plotted instead of the histogram
+
 	@rtype: L{Plot}
 	@return: a reference to the plot
 	"""
@@ -274,7 +277,9 @@ def hist(values, bins=10, format_string='', range=None, normed=False, density=Fa
 	hist = append(hist, hist[-1])
 
 	kwargs['const_plot'] = True
-	kwargs['closed'] = True
+
+	if not 'closed' in kwargs:
+		kwargs['closed'] = True
 
 	if not 'fill' in kwargs:
 		kwargs['fill'] = True
