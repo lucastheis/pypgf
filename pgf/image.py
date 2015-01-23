@@ -46,11 +46,11 @@ class Image(object):
 				image = array(image)
 
 				if image.dtype.kind not in ['u', 'i']:
-					vmin = kwargs.get('vmin', min(image))
-					vmax = kwargs.get('vmax', max(image))
+					self.vmin = kwargs.get('vmin', min(image))
+					self.vmax = kwargs.get('vmax', max(image))
 
 					# rescale image
-					image = (image - vmin) / (vmax - vmin)
+					image = (image - self.vmin) / (self.vmax - self.vmin)
 					image = array(image * 256., dtype='int32')
 
 				image[image < 0] = 0
@@ -101,7 +101,7 @@ class Image(object):
 		@return: LaTeX code for this plot
 		"""
 
-		tex = '\\addplot graphics\n'
+		tex = '\\addplot[point meta min={0:5f}, point meta max={1:5f}] graphics\n'.format(self.vmin, self.vmax)
 		tex += indent('[xmin={0},xmax={1},ymin={2},ymax={3}]\n'.format(*self.limits()))
 		tex += indent('{' + path.join(Settings.image_folder, self.filename()) + '};\n')
 

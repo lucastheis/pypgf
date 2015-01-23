@@ -334,35 +334,68 @@ def ylabel(ylabel):
 	gca().ylabel = ylabel
 
 
+def zlabel(zlabel):
+	gca().zlabel = zlabel
+
+
 def xtick(xtick, labels=None, rotation=None):
-	gca().xtick = xtick
+	gca().xtick = list(xtick)
 
 	if rotation:
 		gca().xticklabel_rotation = rotation
 
 	if labels is not None:
-		xticklabels(labels)
+		xticklabels(labels, rotation)
 
 
-def ytick(ytick, labels=None):
-	gca().ytick = ytick
+def ytick(ytick, labels=None, rotation=None):
+	gca().ytick = list(ytick)
+
+	if rotation:
+		gca().yticklabel_rotation = rotation
 
 	if labels is not None:
 		yticklabels(labels)
 
 
-def xticklabels(xticklabels, rotation=None):
-	gca().xticklabels = xticklabels
+def ztick(ztick, labels=None, rotation=None):
+	gca().ztick = list(ztick)
 
 	if rotation:
-		gca().xticklabel_rotation = rotation
+		gca().zticklabel_rotation = rotation
 
-	if not gca().xtick:
+	if labels is not None:
+		zticklabels(labels)
+
+
+def xticklabels(xticklabels, rotation=None):
+	if not isinstance(xticklabels[0], str):
+		xticklabels = ['{0}'.format(label) for label in xticklabels]
+
+	gca().xticklabels = xticklabels
+
+	if gca().xtick is None:
 		xtick(range(1, len(xticklabels) + 1))
 
 
-def yticklabels(yticklabels):
+def yticklabels(yticklabels, rotation=None):
+	if not isinstance(yticklabels[0], str):
+		yticklabels = ['{0}'.format(label) for label in yticklabels]
+
 	gca().yticklabels = yticklabels
+
+	if rotation:
+		gca().yticklabel_rotation = rotation
+
+
+def zticklabels(zticklabels, rotation=None):
+	if not isinstance(zticklabels[0], str):
+		zticklabels = ['{0}'.format(label) for label in zticklabels]
+
+	gca().zticklabels = zticklabels
+
+	if rotation:
+		gca().zticklabel_rotation = rotation
 
 
 def axis(*args, **kwargs):
@@ -395,7 +428,12 @@ def axis(*args, **kwargs):
 				ax.axis_y_line = 'middle'
 
 		elif isinstance(args[0], list) or isinstance(args[0], ndarray):
-			gca().xmin, gca().xmax, gca().ymin, gca().ymax = args[0]
+			if len(args[0]) == 4:
+				gca().xmin, gca().xmax, gca().ymin, gca().ymax = args[0]
+			elif len(args[0]) == 6:
+				gca().xmin, gca().xmax, \
+				gca().ymin, gca().ymax, \
+				gca().zmin, gca().zmax = args[0]
 
 	for key, value in kwargs.items():
 		gca().__dict__[key] = value
@@ -413,6 +451,12 @@ def xlim(xmin, xmax):
 def ylim(ymin, ymax):
 	gca().ymin = ymin
 	gca().ymax = ymax
+
+
+
+def zlim(zmin, zmax):
+	gca().zmin = zmin
+	gca().zmax = zmax
 
 
 
@@ -551,6 +595,18 @@ def text(x, y, text, **kwargs):
 
 def colormap(colormap):
 	gca().colormap = colormap
+
+
+def colorbar(colorbar=None):
+	if colorbar is None:
+		# toggle color bar
+		if gca().colorbar:
+			gca().colorbar = False
+		else:
+			gca().colorbar = True
+		return
+
+	gca().colorbar = colorbar
 
 
 def cyclelist(cyclelist):
